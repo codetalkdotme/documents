@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+						"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newcare.inter.mapper.FdContractMapper">
+
+	<resultMap id="fdContractResultMap"  type="com.newcare.inter.pojo.FdContract">
+		<result column="contract_id" property="id"></result>
+	  	<result column="user_id" property="userId"></result>
+	  	<result column="contract_status" property="status"></result>
+	  	<result column="begin_date" property="beginDate"></result>
+	  	<result column="end_date" property="endDate"></result>
+	  	<result column="confirm_date" property="confirmDate"></result>
+	  	<result column="create_date" property="createDate"></result>
+	  	<result column="apply_date" property="applyDate"></result>
+	</resultMap>
+
+	<resultMap id="fdContractVOSimpleResultMap"  type="com.newcare.inter.vo.FdContractVO" extends="fdContractResultMap">
+		
+		<!-- 服务项目 -->
+		<collection property="serviceList" ofType="Integer">
+			<result column="service_code"/>
+		</collection>
+	  	
+	</resultMap>
+
+	<resultMap id="fdContractVOResultMap"  type="com.newcare.inter.vo.FdContractVO" extends="fdContractVOSimpleResultMap">
+		<result column="resident_no" property="residentNo"></result>
+	  	<result column="resident_mobile" property="residentPhone"></result>
+	  	<result column="resident_address" property="residentAddress"></result>
+	  	<result column="station_id" property="stationId"></result>
+	  	<result column="station_name" property="stationName"></result>
+	  	<result column="station_phone" property="stationPhone"></result>
+	  	<result column="fdSignPicUrl" property="fdSignPicUrl"></result>
+	  	<result column="userSignPicUrl" property="userSignPicUrl"></result>
+	  	<result column="birth" property="birth"></result>
+	  	<result column="socialSecurityCard" property="socialSecurityCard"></result>
+	  	
+	  	<!-- 服务项目 -->
+		<collection property="tenementUidList" ofType="Long">
+			<result column="member_user_id"/>
+		</collection>
+	  	
+	</resultMap>
+	
+	<insert id="insertContract" parameterType="com.newcare.inter.pojo.FdContract" useGeneratedKeys="true" keyProperty="id" keyColumn="contract_id">
+		INSERT INTO inter_fd_contracts(
+		   user_id
+		  ,tenement_id
+		  ,contract_status
+		  ,begin_date
+		  ,end_date
+		  ,confirm_date
+		  ,apply_date
+		) VALUES (
+		   #{userId}
+		  ,#{tenementId}
+		  ,#{status}
+		  ,#{beginDate}
+		  ,#{endDate}
+		  ,#{confirmDate}
+		  ,#{applyDate}
+		)
+	</insert>
+	
+	<delete id="deleteContractById" parameterType="Long">
+		delete from inter_fd_contracts where contract_id = #{contractId}
+	</delete>
+	
+	<select id="selectContractById" parameterType="Long" resultMap="fdContractResultMap">
+		select contract_id, user_id, tenement_id, contract_status, begin_date, end_date, confirm_date, apply_date
+		  from inter_fd_contracts 
+		 where contract_id = #{contractId}
+	</select>
+	
+	<update id="updateContract" parameterType="com.newcare.inter.pojo.FdContract">
+		update inter_fd_contracts 
+		   set contract_status = #{status}
+			  ,begin_date = #{beginDate}
+			  ,end_date = #{endDate}
+		   	  ,confirm_date = #{confirmDate}
+		   	   <if test="applyDate != null">
+		   	   ,apply_date = #{applyDate}
+		   	   </if>
+		   	   <if test="fdSignPicUrl != null and fdSignPicUrl !=''">
+		   	   ,fd_sign_pic = #{fdSignPicUrl}
+		   	   </if>
+		   	   <if test="userSignPicUrl != null and userSignPicUrl != ''">
+		   	   ,user_sign_pic = #{userSignPicUrl}
+		   	   </if>
+		   	   <if test="socialSecurityCard != null and socialSecurityCard != ''">
+		   	   ,social_security_card = #{socialSecurityCard}
+		   	   </if>
+		 where contract_id = #{id};
+	</update>
+	
+	<select id="selectSimpleContractVOByUserId" parameterType="Long" resultMap="fdContractVOSimpleResultMap">
+			select ifc.contract_id, ifc.user_id, tenement_id, contract_status, 
+				 begin_date, end_date, confirm_date, ifc.create_date, ifc.apply_date,
+				 ifcs.contract_service_id, ifcs.service_code
+			 from doc_residents_base rb
+		left join inter_fd_contracts ifc on ifc.tenement_id = rb.detail_id 
+		      and (ifc.contract_status = 1 or ifc.contract_status = 2 or (ifc.contract_status = 3 and ifc.end_date > now()))
+		left join inter_fd_contract_services ifcs on ifc.contract_id = ifcs.fd_contract_id
+		    where rb.user_id = #{userId}
+	</select>
+	
+	<select id="selectContractByTenementId" parameterType="Long" resultMap="fdContractResultMap">
+			select ifc.contract_id, ifc.user_id, tenement_id, contract_status, 
+			       begin_date, end_date, confirm_date, ifc.create_date, ifc.apply_date
+			  from inter_fd_contracts ifc
+			 where ifc.tenement_id = #{tenementId}
+			   and (ifc.contract_status = 1 or ifc.contract_status = 2 or (ifc.contract_status = 3 and ifc.end_date > now()))
+	</select>
+	
+	<select id="selectContractVOByHecadreId" parameterType="java.util.Map" resultMap="fdContractVOSimpleResultMap">
+		select t.contract_id, t.user_id, tenement_id, contract_status, 
+			   begin_date, end_date, apply_date, confirm_date, t.create_date,
+			   ifcs.contract_service_id, ifcs.service_code 
+		  from (
+			select * from inter_fd_contracts ifc
+			 where ifc.tenement_id in (select detail_id from fnd_community_household_detail where hecadre_uid = #{userId})
+				  and ifc.contract_status != 1 
+				order by create_date desc
+				limit #{begin}, #{count}		
+		  ) t left join inter_fd_contract_services ifcs on t.contract_id = ifcs.fd_contract_id
+	</select>
+	
+	<select id="selectActiveContractIdByUser" parameterType="Long" resultType="Long">
+		select ifnull(ifc.contract_id, 0)
+		  from doc_residents_base rb
+	 left join inter_fd_contracts ifc on rb.detail_id = ifc.tenement_id and (
+	       		ifc.contract_status = 2 or (ifc.contract_status = 3 and ifc.end_date > now()))
+	     where rb.user_id = #{user_id}
+	</select>
+	
+	<select id="selectContractDetailById" parameterType="Long" resultMap="fdContractVOResultMap">
+			select ifc.contract_id, ifc.user_id, ifc.contract_status, 
+				   ifc.begin_date, ifc.end_date, ifc.apply_date, ifc.confirm_date, ifc.create_date, 
+				   ifcs.contract_service_id, ifcs.service_code, 
+				   r1.resident_no, r1.resident_mobile, r1.resident_address, 
+				   r2.user_id member_user_id, 
+				   fcss.id station_id, fcss.name station_name, fcss.phone station_phone,
+				   ifc.fd_sign_pic fdSignPicUrl,ifc.user_sign_pic userSignPicUrl,r1.resident_birthday birth,
+				   ifc.social_security_card socialSecurityCard
+			 from inter_fd_contracts ifc
+			 left join inter_fd_contract_services ifcs on ifc.contract_id = ifcs.fd_contract_id
+			 left join doc_residents_base r1 on r1.user_id = ifc.user_id 
+			 left join doc_residents_base r2 on r2.detail_id = r1.detail_id
+			 left join fnd_community_household_detail hhd on r1.detail_id = hhd.detail_id 
+			 left join fnd_community_household_header hhh on hhd.header_id = hhh.header_id
+			 left join fnd_community_service_station fcss on hhh.station_id = fcss.id
+			where ifc.contract_id = #{contractId}
+	</select>
+	
+	<select id="selectFdMembersByHecadre" parameterType="Long" resultType="java.util.HashMap">
+		select m2.user_id, r.role_name, lkp.lookup_value title, m2.member_type
+		  from fnd_fd_members m1 
+		  left join fnd_fd_members m2 on m1.team_id = m2.team_id
+		  left join fnd_staff stf on m2.staff_id = stf.staff_id
+		  left join fnd_roles r on stf.staff_role = r.role_id
+		  left join fnd_lookups lkp on stf.staff_title = lkp.lookup_code and lkp.lookup_category = 'WORKING_TITLE'
+		 where m1.user_id = #{hecadreUid}
+	</select>
+
+</mapper>   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

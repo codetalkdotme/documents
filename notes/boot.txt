@@ -1,0 +1,337 @@
+1. basic
+
+-- Parent Dep
+
+```xml
+<parent>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-parent</artifactId>
+	<version>1.4.5.RELEASE</version>
+</parent>
+```
+
+-- application.properties
+
+Put this file outside of classpath, so it's easy to configure for different envs.
+
+-- annotations
+
+```Java
+@SpringBootApplication
+@ComponentScan(basePackages = {
+		"com.newcare.mesg",
+		"com.newcare.cache.config",
+		"com.newcare.auth.dao.impl",
+		"com.newcare.*.service.impl",
+		"com.newcare.service.impl",
+		"com.newcare.cache.service.impl",
+		"com.newcare.timedtask.timer"
+})
+@MapperScan(value = {"com.newcare.*.mapper"})
+@ImportResource("classpath:dubbo-provider.xml")
+```
+
+3. archive & run
+
+-- archive
+
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-shade-plugin</artifactId>
+			<executions>
+				<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+					<configuration>
+						<transformers>
+							<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<resource>META-INF/spring.handlers</resource>
+							</transformer>
+							<transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+								<resource>META-INF/spring.factories</resource>
+							</transformer>
+							<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+								<resource>META-INF/spring.schemas</resource>
+							</transformer>
+							<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+								<mainClass>com.newcare.main.BizMain</mainClass>
+							</transformer>
+						</transformers>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+
+-- run
+
+use nohup
+
+3. Web related
+
+3.1 serve JSP
+
+pom.xml 
+
+-- dependency 
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.tomcat.embed</groupId>
+	<artifactId>tomcat-embed-jasper</artifactId>
+	<scope>provided</scope>
+</dependency>
+
+<dependency>
+	<groupId>javax.servlet</groupId>
+	<artifactId>jstl</artifactId>
+</dependency>
+
+-- packaging
+
+Note: packaged as war
+
+<packaging>war</packaging>
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+		</plugin>
+	</plugins>
+</build>
+
+-- run 
+
+nohup  java -Djava.io.tmpdir=./logs -jar Update-1.0.3-0525.war &
+
+3.2 serve static
+
+Put static resources under: src/main/resources/static or public etc...
+
+Note: packaged as jar
+
+4. Configurable
+
+```application.properties
+im.host=192.168.1.72
+im.port=9090
+im.bufferSize=2048
+im.idleTime=10
+```
+
+```Java
+@ConfigurationProperties("im")
+public class IMProxy extends AbstractServiceProxy {
+	
+	private String host;
+	// ...
+	
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+	
+	// getter & setter
+```
+
+5. Message
+
+src/main/resources/locale/messages_zh.properties
+
+```plain
+reqauth_err_notkt=xxxx
+reqauth_err_ticket=xxxxx！
+reqauth_err_srctype=xxx
+```
+
+```Java
+@ComponentScan(basePackages = {
+		"com.newcare.mesg",
+		// ...
+})
+public class BizMain
+{
+
+	// ...
+	
+	@Bean
+    public ReloadableResourceBundleMessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasename("classpath:locale/messages");
+        messageSource.setCacheSeconds(3600); //refresh cache once per hour
+        messageSource.setDefaultEncoding("UTF-8");
+        return messageSource;
+    }
+
+}
+```
+
+```Java
+@Component
+public class MessageService {
+	
+	@Autowired
+    private MessageSource messageSource;
+
+    public String get(String code) {
+        return messageSource.getMessage(code, null, Locale.CHINESE);
+    }
+    
+}
+```
+
+```Java
+public abstract class AbstractBizService implements IBizService {
+
+	@Autowired
+	protected MessageService messageService;
+	
+	// ...
+```
+
+6. Logging
+
+src/main/resources/logback.xml
+
+
+7. Embedded container 
+
+Tomcat vs Jetty vs Undertow
+
+https://examples.javacodegeeks.com/enterprise-java/spring/tomcat-vs-jetty-vs-undertow-comparison-of-spring-boot-embedded-servlet-containers/
+
+Note: Jetty & Undertow don't support JSP well.
+
+Example, use Undertow in Maven: 
+-----------------------------------------------------------
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-web</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-undertow</artifactId>
+</dependency>
+-----------------------------------------------------------
+
+
+8. Test case
+
+-------------------------------- Single --------------------------------
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes=BizMain.class)
+public class JsmsServiceTest {
+
+	@Autowired 
+	private IJsmsService smsService;
+
+-------------------------------- Suite --------------------------------
+@RunWith(Suite.class)
+@Suite.SuiteClasses({
+		JsmsServiceTest.class, 
+		NoticeServiceTest.class
+})
+public class BizSuiteTest {
+
+}
+
+Note: by using testsuite, application context is loaded once!
+
+9. Config
+
+Refer: 
+https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html
+
+spring.resources.cache-period=# Cache period for the resources served by the resource handler, in seconds.
+
+server.port = 8080
+server.connection-timeout = 25000
+server.tomcat.max-connections = 10000
+
+spring.http.multipart.maxFileSize=1Mb
+spring.http.multipart.maxRequestSize=1Mb
+
+10. FileUploadBase.SizeLimitExceededException
+
+上传文件大小超过配置大小时, 后台直接吃掉了异常, 返回connection reset
+
+解决方案:
+
+### Step-1 配置tomcat参数maxSwallowSize = -1 
+
+在XXXMain.java中添加:
+
+@Bean
+public TomcatEmbeddedServletContainerFactory containerFactory() {
+	
+	return new TomcatEmbeddedServletContainerFactory() {
+		protected void customizeConnector(Connector connector) {
+			super.customizeConnector(connector);
+			if (connector.getProtocolHandler() instanceof AbstractHttp11Protocol) {
+				((AbstractHttp11Protocol<?>) connector.getProtocolHandler()).setMaxSwallowSize(-1);
+			}
+		}
+	};
+
+}
+
+### Step-2 全局捕捉MultiplePartException 
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+	@Autowired
+	protected MessageService messageService;	
+	
+	@ExceptionHandler(MultipartException.class)
+	@ResponseBody
+    public String handleError(MultipartException e) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("ret_code", "fail");
+		map.put("ret_msg", messageService.get("upload_file_error"));
+		
+        return JsonUtils.map2Json(map);
+    }
+	
+}
+
+11. CommandLineRunner
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

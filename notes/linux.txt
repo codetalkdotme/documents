@@ -1,0 +1,18 @@
+1. process mem 
+
+ps aux --sort -rss | more
+
+2. ntp
+
+yum install ntp
+
+/etc/init.d/ntpd restart
+
+/usr/sbin/ntpdate pool.ntp.org
+
+
+
+
+
+
+

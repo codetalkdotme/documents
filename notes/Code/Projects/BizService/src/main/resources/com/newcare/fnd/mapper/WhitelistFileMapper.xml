@@ -1,0 +1,29 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.fnd.mapper.WhitelistFileMapper">
+    <resultMap id="wlFileMap" type="com.newcare.fnd.pojo.WhitelistFile">
+        <id column="file_id" property="id" />
+        <result column="file_fdfs_url" property="fdfsUrl" />
+        <result column="file_encode_url" property="encodeUrl" />
+        <result column="file_name" property="name" />
+        <result column="file_type" property="type" />
+        <result column="file_length" property="length" />
+    </resultMap>
+
+	<insert id="insertFile" parameterType="com.newcare.fnd.pojo.WhitelistFile" 
+			useGeneratedKeys="true" keyProperty="id" keyColumn="file_id">
+        insert into fnd_whitelist_files (file_fdfs_url,file_encode_url,file_name, file_type, file_length)
+        values (#{fdfsUrl},#{encodeUrl}, #{name}, #{type} ,#{length})
+    </insert>
+
+    <select id="selectFileByEncodeUrl" resultMap="wlFileMap" parameterType="String">
+        select file_id, file_fdfs_url, file_encode_url,file_name, file_type, file_length, create_date 
+          from fnd_whitelist_files 
+         where file_encode_url = #{encodeUrl}
+    </select>
+
+</mapper>
+
+
+

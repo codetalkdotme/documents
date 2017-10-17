@@ -1,0 +1,15 @@
+
+https://stackoverflow.com/questions/6004915/how-do-i-move-a-redis-database-from-one-server-to-another
+
+
+A --------------> B
+
+A$ redis-cli
+127.0.0.1:6379> SAVE
+
+scp /var/lib/redis/dump.rdb myuser@B:/tmp/dump.rdb
+
+B$ sudo service redis-server stop
+B$ sudo cp /tmp/dump.rdb /var/lib/redis/dump.rdb
+B$ sudo chown redis: /var/lib/redis/dump.rdb
+B$ sudo service redis-server start

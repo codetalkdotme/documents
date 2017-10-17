@@ -1,0 +1,137 @@
+1. Assembly
+
+打包文件/目录为指定格式
+
+<plugin>
+<!-- assamble static content -->
+<artifactId>maven-assembly-plugin</artifactId>
+<configuration>
+	<descriptors>
+		<descriptor>src/main/assembly/static.xml</descriptor>
+	</descriptors>
+</configuration>
+<executions>
+	<execution>
+		<id>make-assembly</id>
+		<phase>package</phase>
+		<goals>
+			<goal>single</goal>
+		</goals>
+	</execution>
+</executions>
+</plugin>
+
+--------------------------------- static.xml ---------------------------------
+
+<assembly>
+    <id>static</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/webapp</directory>
+            <includes>
+                <include>**/*.html</include>
+                <include>**/*.css</include>
+                <include>**/*.js</include>
+            </includes>
+            <excludes>
+                <exclude>WEB-INF/*</exclude>
+            </excludes>
+            <outputDirectory>/static</outputDirectory>
+        </fileSet>
+    </fileSets>
+</assembly>
+
+2. Shade
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-shade-plugin</artifactId>
+	<executions>
+		<execution>
+			<phase>package</phase>
+			<goals>
+				<goal>shade</goal>
+			</goals>
+			<configuration>
+				<transformers>
+					<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+						<resource>META-INF/spring.handlers</resource>
+					</transformer>
+					<transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+						<resource>META-INF/spring.factories</resource>
+					</transformer>
+					<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+						<resource>META-INF/spring.schemas</resource>
+					</transformer>
+					<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+					<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+						<mainClass>com.newcare.main.BizMain</mainClass>
+					</transformer>
+				</transformers>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+
+
+3. Resources
+
+<plugin>
+	<artifactId>maven-resources-plugin</artifactId>
+	<executions>
+		<execution>
+			<id>copy-resources</id>
+			<phase>package</phase>
+			<goals>
+				<goal>copy-resources</goal>
+			</goals>
+			<configuration>
+				<outputDirectory>F:/www/codex-app</outputDirectory>
+				<resources>
+					<resource>
+						<directory>src/main/webapp/</directory>
+					</resource>
+				</resources>
+			</configuration>
+		</execution>
+	</executions>
+</plugin>
+
+
+4. Spring boot maven 
+
+<!-- Package as an executable jar/war -->
+<plugin>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-maven-plugin</artifactId>
+</plugin>
+
+5. surfire
+
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-surefire-plugin</artifactId>
+	<configuration>
+		<excludes>
+			<exclude>**/JsmsServiceTest.java</exclude>
+		</excludes>
+	</configuration>
+</plugin>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+						http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.newcare</groupId>
+	<artifactId>BizService</artifactId>
+	<packaging>jar</packaging>
+	<version>1.0.8-0607</version>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>1.4.5.RELEASE</version>
+	</parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mybatis.spring.boot</groupId>
+			<artifactId>mybatis-spring-boot-starter</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.dubbo.springboot</groupId>
+			<artifactId>spring-boot-starter-dubbo</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+			<version>1.5.2.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.6.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.alibaba</groupId>
+			<artifactId>fastjson</artifactId>
+			<version>1.2.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.newcare</groupId>
+			<artifactId>BizService-api</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.newcare</groupId>
+			<artifactId>Common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.handlers</resource>
+								</transformer>
+								<transformer implementation="org.springframework.boot.maven.PropertiesMergingResourceTransformer">
+									<resource>META-INF/spring.factories</resource>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+									<resource>META-INF/spring.schemas</resource>
+								</transformer>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>com.newcare.main.BizMain</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+
+</project>

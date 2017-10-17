@@ -1,0 +1,61 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.task.mapper.TaskPlanTenementMapper">
+
+	<resultMap type="com.newcare.task.pojo.TaskPlanTenement" id="taskPlanTenementResultMap">
+		<result property="planId" column="plan_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="tenementId" column="tenement_id"></result>
+		<result property="status" column="tenement_status"></result>
+	</resultMap>
+
+	<insert id="insertTaskPlanTenements" parameterType="java.util.List">
+		INSERT INTO task_plan_tenements (plan_id, tenement_id, user_id, tenement_status)
+		VALUES
+		<foreach collection ="list" item="tenement" index= "index" separator =",">
+        (
+			#{tenement.planId}, #{tenement.tenementId}, #{tenement.userId}, #{tenement.status}
+		)
+		</foreach >
+	</insert>
+	
+	<select id="selectTenementIn" parameterType="java.util.Map" resultMap="taskPlanTenementResultMap">
+		select plan_id, user_id, tenement_id, tenement_status 
+		  from task_plan_tenements
+		 where tenement_status = 1
+		   and user_id = #{userId} 
+		   and tenement_id in (
+				<foreach collection ="tenementList" item="tenement" index= "index" separator =",">
+		        #{tenement}
+				</foreach>
+		   )
+	</select>
+	
+	<select id="selectTenementListByUser" parameterType="Long" resultType="Long">
+		select a.tenement_id 
+		  from task_plan_tenements a, task_plans b 
+		 where a.tenement_status = 1 
+		   and a.user_id = #{userId}
+		   and a.plan_id = b.plan_id 
+		   and b.plan_status = 'A'
+	</select>
+	
+	<update id="updateTenementDone" parameterType="java.util.Map">
+		update task_plan_tenements a set a.tenement_status = 2
+		 where a.user_id = #{userId} and a.tenement_id = #{tenementId} and a.tenement_status = 1
+		   and exists (select 1 from task_plans b where a.plan_id = b.plan_id and b.plan_status = 'A')
+	</update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,204 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.fnd.mapper.NoticeMapper">
+
+	<resultMap type="com.newcare.fnd.pojo.Notice" id="noticeResultMap">
+		<result property="id" column="notice_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="userMobile" column="user_mobile"></result>
+		<result property="srcType" column="notice_srctype"></result>
+		<result property="type" column="notice_type"></result>
+		
+		<result property="fromUser" column="from_user_id"></result>
+		<result property="mesgId" column="mesg_id"></result>
+		<result property="appoId" column="appo_id"></result>
+		<result property="appoDate" column="appo_date"></result>
+		
+		<result property="content" column="notice_content"></result>
+		<result property="dtlContent" column="notice_dtl_content"></result>
+		<result property="replyCode" column="reply_code"></result>
+		<result property="replyContent" column="reply_content"></result>
+		
+		<result property="isApp" column="is_app"></result>
+		<result property="appStatus" column="app_status"></result>
+		<result property="isPush" column="is_push"></result>
+		<result property="pushStatus" column="push_status"></result>
+		<result property="isSms" column="is_sms"></result>
+		<result property="smsStatus" column="sms_status"></result>
+		
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<insert id="insertNotice" parameterType="com.newcare.fnd.pojo.Notice" useGeneratedKeys="true" keyProperty="id" keyColumn="notice_id">
+		INSERT INTO fnd_notice(
+		   user_id
+		  ,user_mobile
+		  ,notice_srctype
+		  ,notice_type
+		  ,from_user_id
+		  ,mesg_id
+		  ,appo_id
+		  ,appo_date
+		  ,notice_content
+		  ,notice_dtl_content
+		  ,is_app
+		  ,is_push
+		  ,is_sms
+		) VALUES (
+		   #{userId}
+		  ,#{userMobile}
+		  ,#{srcType}
+		  ,#{type}
+		  ,#{fromUser}
+		  ,#{mesgId}
+		  ,#{appoId}
+		  ,#{appoDate}
+		  ,#{content}
+		  ,#{dtlContent}
+		  ,#{isApp}
+		  ,#{isPush}
+		  ,#{isSms}
+		)
+	</insert>
+	
+	<insert id="insertNoticeList" parameterType="java.util.List">
+		INSERT INTO fnd_notice(user_id,user_mobile,notice_srctype,notice_type,from_user_id,
+							   mesg_id,appo_id, appo_date,notice_content,notice_dtl_content,is_app,is_push,is_sms) 
+		VALUES
+			<foreach collection ="list" item="notice" index= "index" separator =",">
+			(
+				#{notice.userId},#{notice.userMobile},#{notice.srcType},#{notice.type},#{notice.fromUser},#{notice.mesgId},
+			 	#{notice.appoId},#{notice.appoDate},#{notice.content},#{notice.dtlContent},#{notice.isApp},#{notice.isPush},#{notice.isSms}
+			)
+			</foreach>	   
+	</insert>
+	
+	<select id="selectAppNoticeById" parameterType="Long" resultMap="noticeResultMap">
+		SELECT notice_id, user_id, user_mobile, notice_srctype, notice_type, from_user_id, appo_id, appo_date, create_date, 
+			   app_status, notice_content, notice_dtl_content, reply_code, reply_content
+		  FROM fnd_notice
+		 WHERE notice_id = #{noticeId}
+		   AND is_app = 'Y'
+	</select>
+	
+	<select id="countUnreadAppNotice" parameterType="java.util.Map" resultType="java.util.Map">
+		select b.notice_type notice_type, sum(if(b.app_status=1, 1, 0)) new_count 
+		  from fnd_notice b 
+		 where b.is_app = 'Y'
+		   and b.user_id = #{userId}
+		   and b.notice_srctype = #{srcType}
+		 group by b.notice_type
+	</select>
+	
+	<select id="selectAppNoticeList" parameterType="java.util.Map" resultMap="noticeResultMap">
+		select notice_id, user_id, user_mobile, notice_srctype, notice_type, 
+			 from_user_id, appo_id, appo_date, create_date, 
+			 notice_content, notice_dtl_content, app_status, reply_code, reply_content
+		  from fnd_notice 
+		 where user_id = #{userId} 
+		   and notice_srctype = #{srcType}
+		   <if test="status != null">
+		   		and app_status = #{status}   
+           </if>
+           <if test="type != null">
+		   		and notice_type = #{type}
+           </if>
+		 order by create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<select id="selectAppNoticeByTypeList" parameterType="java.util.Map" resultMap="noticeResultMap">
+		select notice_id, user_id, user_mobile, notice_srctype, notice_type, 
+			 from_user_id, appo_id, appo_date, create_date, 
+			 notice_content, notice_dtl_content, app_status, reply_code, reply_content
+		  from fnd_notice 
+		 where user_id = #{userId} 
+		   and notice_srctype = #{srcType}
+		   and notice_type in (
+			   	<foreach collection ="typeList" item="type" index= "index" separator =",">
+				#{type}
+				</foreach>
+		   )
+		 order by create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<update id="updateAppNoticeReplied" parameterType="com.newcare.fnd.pojo.Notice">
+		update fnd_notice
+		   set app_status = 3, reply_code = #{replyCode}, reply_content=#{replyContent}
+		 where notice_id = #{id} 
+		   and app_status != 3
+	</update>
+	
+	<update id="updateIMReadByList" parameterType="java.util.List">
+		update fnd_notice
+		   set app_status = 2
+		 where mesg_id in (
+		 	<foreach collection ="list" item="mesgId" index= "index" separator =",">
+			#{mesgId}
+			</foreach>
+		 )
+	</update>
+	
+	<update id="updateAllRead" parameterType="java.util.Map">
+		update fnd_notice 
+		   set app_status = 2
+		 where app_status = 1
+		   and user_id = #{userId}
+		   and notice_srctype = #{srcType}
+		   <if test="type != null">
+		  	 and notice_type = #{type}
+           </if>
+	</update>
+	
+	<update id="updateAllReadByTypeList" parameterType="java.util.Map">
+		update fnd_notice 
+		   set app_status = 2
+		 where app_status = 1
+		   and user_id = #{userId}
+		   and notice_srctype = #{srcType}
+		   and notice_type in (
+		   	<foreach collection ="typeList" item="type" index= "index" separator =",">#{type}</foreach>
+		   )
+	</update>
+	
+	<select id="listUnreadPushNoticeByUser" parameterType="Long" resultMap="noticeResultMap">
+		SELECT notice_id, user_id, push_status, notice_content, create_date
+		  FROM fnd_notice
+		 WHERE is_push = 'Y'
+		   AND user_id = #{userId}
+		   AND push_status = 1
+		 ORDER BY create_date desc
+	</select>
+	
+	<update id="updatePushStatusByList" parameterType="java.util.Map">
+		update fnd_notice 
+		   set push_status = #{pushStatus}
+		 where notice_id in (
+		 	<foreach collection ="noticeIdList" item="noticeId" index= "index" separator =",">
+			#{noticeId}
+			</foreach>
+		 ) 	
+	</update>
+	
+	<select id="listUnreadPushNotice" parameterType="java.util.Map" resultMap="noticeResultMap">
+		SELECT notice_id, user_id, notice_srctype, push_status, notice_content, create_date
+		  FROM fnd_notice
+		 WHERE is_push = 'Y'
+		   AND push_status = 1
+		   AND DATE_ADD(create_date, interval #{days} day) > now()
+		 ORDER BY create_date asc
+		 LIMIT 0, #{count}
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

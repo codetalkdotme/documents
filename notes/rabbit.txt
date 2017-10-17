@@ -1,0 +1,138 @@
+
+1. start / stop
+
+### 启动 / 关闭rabbit应用 和 Erl节点
+service rabbitmq-server start / stop
+
+### 启动 / 关闭rabbit应用
+rabbitmqctl start_app / stop_app
+
+2. config
+
+配置文件路径可以通过日志查找, 日志一般存放在以下路径:
+----------------------------------------
+/var/log/rabbitmq/rabbit@[host].log
+----------------------------------------
+
+日志文件可以查找到如下信息:
+------------------------------------------------------------
+=INFO REPORT==== 20-Jul-2017::12:53:51 ===
+node           : rabbit@dev-services251
+home dir       : /var/lib/rabbitmq
+config file(s) : /etc/rabbitmq/rabbitmq.config (not found)
+cookie hash    : 9KjKcHyL70l4XP+S0w0FUQ==
+log            : /var/log/rabbitmq/rabbit@dev-services251.log
+sasl log       : /var/log/rabbitmq/rabbit@dev-services251-sasl.log
+database dir   : /var/lib/rabbitmq/mnesia/rabbit@dev-services251
+------------------------------------------------------------
+
+因此配置文件路径在: /etc/rabbitmq/rabbitmq.config
+
+config文件的位置可以通过rabbitmq-env.conf 来指定, 而它的位置则是通过RABBITMQ_CONF_ENV_FILE环境变量来指定的. 示例:
+
+------------------------------------------------------------
+#Rename the node
+NODENAME=bunny@myhost
+#Config file location and new filename bunnies.config
+CONFIG_FILE=/etc/rabbitmq/testdir/bunnies
+------------------------------------------------------------
+
+示例配置:
+
+https://github.com/rabbitmq/rabbitmq-server/blob/stable/docs/rabbitmq.config.example
+
+3. ACL
+
+-- vhosts
+rabbitmqctl list_vhosts / add_vhost / delete_vhost
+
+rabbitmqctl add_vhost ssc
+
+-- exchanges 
+rabbitmqctl list_exchanges
+
+-- queues 
+rabbitmqctl list_queues
+
+-- bindings
+rabbitmqctl list_bindings
+
+-- list user
+rabbitmqctl list_users
+
+-- delete default `guest`
+rabbitmqctl delete_user guest
+
+-- add admin user
+rabbitmqctl add_user admin welcome1
+
+-- change admin password
+rabbitmqctl change_password admin welcome1
+
+-- set user tag
+rabbitmqctl set_user_tags admin administrator
+
+-- set admin permissions
+rabbitmqctl set_permissions -p / admin ".*" ".*" ".*"
+
+Syntax: set_permissions [-p vhost] {user} {conf} {write} {read}
+
+Reference: 
+https://www.rabbitmq.com/access-control.html
+
+-------------------------------------------------------------------------------------------
+Example: rabbitmqctl set_permissions -p /myvhost tonyg "^tonyg-.*" ".*" ".*"
+
+This command instructs the RabbitMQ broker to grant the user named tonyg access 
+to the virtual host called /myvhost, with configure permissions on all resources 
+whose names starts with "tonyg-", and write and read permissions on all resources.
+-------------------------------------------------------------------------------------------
+
+-- list permissions at specified vhost
+rabbitmqctl list_permissions -p ssc
+
+-- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Admin
+
+----------------------------------------
+rabbitmq-plugins list
+
+rabbitmq-plugins enable rabbitmq_management
+----------------------------------------
+
+HTTP访问:
+
+http://192.168.1.251:15672/
+
+只有设置了tag为[administrator]的用户才可以登录
+
+
+
+
+
+
+
+
+

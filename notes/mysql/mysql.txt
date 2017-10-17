@@ -1,0 +1,138 @@
+########################################################################
+
+service iptables stop
+
+########################################################################
+
+1. Install
+
+Copy mysql-community.repo to /etc/yum.repos.d
+Copy RPM-GPG-KEY-mysql to /etc/pki/rpm-gpg
+
+yum install mysql-community-server.x86_64
+
+--------------------------------------
+
+Download rpm from https://www.mysql.com/downloads/, run:
+
+yum install mysql-community-server-5.7.18-1.el6.x86_64.rpm
+
+2. Start
+
+/etc/init.d/mysqld start
+
+chkconfig --add mysqld
+
+Search in /var/log/mysqld.log, there is line like:
+------------------------------------------------------------------
+A temporary password is generated for root@localhost: BszQMud_571D
+------------------------------------------------------------------
+
+SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Xgb870924');
+
+5.7.6 and later:
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'New#caresz1';
+
+
+uninstall plugin validate_password;
+
+CREATE DATABASE newcaredb DEFAULT CHARSET 'UTF8';
+
+grant all on newcaredb.* to 'appdev'@'localhost' identified by 'welcome1';
+
+flush privileges;
+
+-----------
+
+create table fnd_roles (
+	role_id int,
+	role_code varchar(50),
+	role_name varchar(200),
+	role_desc varchar(1000),
+	create_date datetime
+);
+
+insert into fnd_roles values(1, 'ROLE_RESIDENT', '居民角色', '居民角色', now());
+insert into fnd_roles values(2, 'ROLE_HELCARE', '健康专干', '健康专干', now());
+insert into fnd_roles values(3, 'ROLE_DOCTOR', '医生角色', '医生角色', now());
+
+commit;
+
+
+3. Export
+
+mysqldump -u appdev -p newcaredb > newcaredb-0515.sql
+
+
+4. ----
+
+-- Timestamp
+
+只能表示时间范围1970 - 2038, 不支持毫秒
+
+如果没有设定默认值, 在更新时会自动更新为当前时间戳
+
+-- auto_increment
+
+不要以 1 为初始值, 1000为初始值
+
+5. charset
+
+在创建表时如果没有指定字符集, 默认会使用latin1字符集, 不支持中文. 需创建表时指定字符集:
+
+DEFAULT CHARSET=utf8
+
+-----------------------------------------
+
+更新: 建表时如果没有指定字符集则会继承数据库的字符集, 查看: 
+---------------------------------------------------
+show variables like 'character_set_database';
+---------------------------------------------------
+
+因此指定数据库的默认字符集为 utf8 亦可.
+
+更改数据库默认字符集:
+ALTER DATABASE <database_name> CHARACTER SET utf8;
+
+6. timestamp
+
+PowerDesigner 生成SQL
+----------------------------------------------------------------
+accept_date          timestamp comment '接受答复时间'
+----------------------------------------------------------------
+
+修改为:
+----------------------------------------------------------------
+accept_date          timestamp null comment '接受答复时间'
+----------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,119 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.fnd.mapper.AppNoticeMapper">
+
+	<resultMap type="com.newcare.fnd.pojo.AppNotice" id="appNoticeResultMap" extends="com.newcare.fnd.mapper.NoticeMapper.noticeResultMap">
+		<result property="baseId" column="base_notice_id"></result>
+		<result property="content" column="notice_content"></result>
+		<result property="dtlContent" column="notice_dtl_content"></result>
+		<result property="status" column="notice_status"></result>
+		<result property="replyCode" column="reply_code"></result>
+		<result property="replyContent" column="reply_content"></result>
+	</resultMap>
+
+	<insert id="insertAppNotice" parameterType="com.newcare.fnd.pojo.AppNotice">
+		INSERT INTO fnd_notice_app(
+		   base_notice_id
+		  ,notice_content
+		  ,notice_dtl_content
+		  ,notice_status
+		  ,mesg_id
+		) VALUES (
+		   #{baseId}
+		  ,#{content}
+		  ,#{dtlContent}
+		  ,#{status}
+		  ,#{mesgId}
+		)
+	</insert>
+	
+	<select id="selectAppNoticeById" parameterType="Long" resultMap="appNoticeResultMap">
+		SELECT a.notice_id, a.user_id, a.user_mobile, a.notice_srctype, a.notice_type, a.from_user_id, a.appo_date, a.create_date, 
+			   b.base_notice_id, b.notice_status, b.notice_content, b.notice_dtl_content, b.reply_code, b.reply_content
+		  FROM fnd_notice_base a, fnd_notice_app b
+		 WHERE a.notice_id = b.base_notice_id
+		   AND b.base_notice_id = #{noticeId}
+	</select>
+	
+	<select id="countUnreadAppNotice" parameterType="java.util.Map" resultType="java.util.Map">
+		select b.notice_type notice_type, sum(if(a.notice_status=1, 1, 0)) new_count from fnd_notice_app a, fnd_notice_base b 
+		 where b.user_id = #{userId}
+		   and b.notice_srctype = #{srcType}
+		   and a.base_notice_id = b.notice_id
+		 group by b.notice_type
+	</select>
+	
+	<select id="selectAppNoticeList" parameterType="java.util.Map" resultMap="appNoticeResultMap">
+		select b.notice_id, b.user_id, b.user_mobile, b.notice_srctype, b.notice_type, 
+			 b.from_user_id, b.appo_date, b.create_date, 
+			 a.base_notice_id, a.notice_content, a.notice_dtl_content, a.notice_status, a.reply_code, a.reply_content
+		  from fnd_notice_app a, fnd_notice_base b 
+		 where user_id = #{userId} 
+		   and notice_srctype = #{srcType}
+		   <if test="status != null">
+		   		and notice_status = #{status}   
+           </if>
+           <if test="type != null">
+		   		and notice_type = #{type}
+           </if>
+		   and a.base_notice_id = b.notice_id
+		 order by b.create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<update id="updateAppNoticeReplied" parameterType="com.newcare.fnd.pojo.AppNotice">
+		update fnd_notice_app 
+		   set notice_status = 3, reply_code = #{replyCode}, reply_content=#{replyContent}
+		 where base_notice_id = #{baseId} 
+		   and notice_status != 3
+	</update>
+	
+	<update id="updateIMReadByList" parameterType="java.util.List">
+		update fnd_notice_app
+		   set notice_status = 2
+		 where mesg_id in (
+		 	<foreach collection ="list" item="mesgId" index= "index" separator =",">
+			#{mesgId}
+			</foreach>
+		 )
+	</update>
+	
+	<update id="updateAllRead" parameterType="java.util.Map">
+		update fnd_notice_app a
+		   set a.notice_status = 2
+		 where a.notice_status = 1
+		   and exists (select 1 from fnd_notice_base b 
+		   				where b.notice_id = a.base_notice_id 
+		   				  and b.user_id = #{userId}
+		   				  and b.notice_srctype = #{srcType}
+		   				  <if test="type != null">
+						  	and b.notice_type = #{type}
+				          </if>
+		   			   )
+	</update>
+	
+	<update id="updateAllReadByTypeList" parameterType="java.util.Map">
+		update fnd_notice_app a
+		   set a.notice_status = 2
+		 where a.notice_status = 1
+		   and exists (select 1 from fnd_notice_base b 
+		   				where b.notice_id = a.base_notice_id 
+		   				  and b.user_id = #{userId}
+		   				  and b.notice_srctype = #{srcType}
+		   				  and b.notice_type in (
+		   				  	<foreach collection ="typeList" item="type" index= "index" separator =",">#{type}</foreach>
+		   				  )
+		   			   )
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

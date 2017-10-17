@@ -1,0 +1,66 @@
+1. JsonProperty
+
+@JsonProperty("update_time")
+public Timestamp getLastUpdate() {
+	return lastUpdate;
+}
+
+
+2. JsonSerialize
+
+@JsonSerialize(nullsUsing=NullTimestampSerializer.class)
+public Timestamp getLastUpdate() {
+	return lastUpdate;
+}
+
+public class NullTimestampSerializer extends JsonSerializer<Timestamp>{
+	 
+    public void serialize(Timestamp ts, JsonGenerator jsonGen, SerializerProvider serProv)
+                                            throws IOException, JsonProcessingException {
+    	if(ts == null) jsonGen.writeNumber(0);
+    }
+}
+
+3. JsonIgnore
+
+@JsonIgnore
+public Long getUserId() {
+	return userId;
+}
+
+4. JsonInclude
+
+@JsonInclude(Include.NON_NULL)
+private String sourceType;
+
+Note: serialize / deserialize property is not NULL.
+
+5. Custom ObjectMapper
+
+public class ObjectNotNullMapper extends ObjectMapper {
+
+    public ObjectNotNullMapper() {
+        super();
+        // 空值处理为空串
+        this.getSerializerProvider().setNullValueSerializer(new JsonSerializer<Object>() {
+            @Override
+            public void serialize(
+                    Object value,
+                    JsonGenerator jg,
+                    SerializerProvider sp) throws IOException, JsonProcessingException {
+                jg.writeString("");
+            }
+        });
+
+    }
+
+}
+
+private static ObjectMapper MAPPER = new ObjectNotNullMapper();
+String jsonStr = MAPPER.writeValueAsString(map);;
+
+
+
+
+
+

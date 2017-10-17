@@ -1,0 +1,143 @@
+1. Usage
+
+-- if / foreach
+
+<if test="subTypeList != null and subTypeList.size() > 0">
+	and notice_subtype in (
+		<foreach collection ="subTypeList" item="subType" index= "index" separator =",">
+		#{subType}
+		</foreach>
+	)
+</if>
+
+<foreach collection ="list" item="tenement" index= "index" separator =",">
+(
+	#{tenement.planId}, #{tenement.tenementId}, #{tenement.userId}, #{tenement.status}
+)
+</foreach >
+
+<foreach collection="list" separator="," index="index" item="areaCode" open="(" close=")">#{areaCode}</foreach>
+
+<if test="_parameter != null and _parameter == true">
+
+-- parameterType
+
+java.util.Map
+Long
+com.newcare.task.pojo.TaskPlan
+String
+java.util.List
+
+
+-- resultType
+
+Integer / Long
+java.util.HashMap
+
+-- resultMap
+
+返回List时, 如果没有找到数据, 则返回空数组!
+
+-- collection
+
+<resultMap type="com.newcare.task.pojo.TaskPlan" id="taskPlanResultMap">
+	<result property="id" column="plan_id"></result>
+	<!-- -->
+	<collection property="dtlList" ofType="com.newcare.task.pojo.TaskPlanDetail">  
+	<!-- -->
+	</collection>
+</resultMap>
+
+<collection property="doctor_list" ofType="Map" javaType="list">
+	<result property="user_id_doctor" column="user_id_doctor" />
+	<result property="dept_name" column="dept_name" />
+</collection>
+
+-- auto_increment
+
+<insert id="insertNotice" parameterType="com.newcare.fnd.pojo.Notice" 
+			useGeneratedKeys="true" keyProperty="id" keyColumn="notice_id">
+
+-- include
+
+<sql id="Base_Column_List">
+	user_id, user_name, user_profile, profile_status, attribute1, attribute2, attribute3, create_date
+</sql>
+
+<select id="selectUserById" parameterType="Integer" resultMap="userResultMap">
+	select <include refid="Base_Column_List" />
+	  from fnd_users
+	 where user_id = #{userId}
+</select>
+			
+2. Param
+
+public void updatePushStatusByList(@Param("noticeIdList") List<Long> noticeIdList, @Param("pushStatus") Integer pushStatus);
+
+<update id="updatePushStatusByList" parameterType="java.util.Map">
+	update fnd_notice 
+	   set push_status = #{pushStatus}
+	 where notice_id in (
+		<foreach collection ="noticeIdList" item="noticeId" index= "index" separator =",">
+		#{noticeId}
+		</foreach>
+	 ) 	
+</update>
+
+
+			
+3. Spring Boot Integeration
+
+```Java
+@SpringBootApplication
+@MapperScan(value = {"com.newcare.*.mapper"})
+public class BizMain {...}
+```
+
+```application.properties
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+spring.datasource.url=jdbc:mysql://192.168.1.250:3306/xxxdb?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+spring.datasource.username=xxx
+spring.datasource.password=xxx
+```
+
+```pom.xml
+<dependency>
+	<groupId>org.mybatis.spring.boot</groupId>
+	<artifactId>mybatis-spring-boot-starter</artifactId>
+	<version>1.2.0</version>
+</dependency>
+
+<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+</dependency>
+```
+
+------ Using $
+
+JsmsMapper.java
+
+public List<Map<String, Object>> selectHAlertMaxDateIn(@Param("inClause") String inClause);
+
+<select id="selectHAlertMaxDateIn" parameterType="String" resultType="java.util.HashMap">
+	select jsms_value1 supervisorUid, jsms_value2 hecadreUid, max(create_date) createDate 
+	  from p3_jsms_msg
+	 where attribute1 = 'HecadreAlert'
+	   and (jsms_value1, jsms_value2) in ${inClause}
+	group by jsms_value1, jsms_value2
+</select>
+
+
+4. UTF8MB4 
+
+https://segmentfault.com/a/1190000000616820
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,35 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.task.mapper.TaskPlanDetailMapper">
+
+
+	<resultMap type="com.newcare.task.pojo.TaskPlanDetail" id="taskPlanDetailResultMap">
+		<result property="planId" column="plan_id"></result>
+		<result property="taskTypeId" column="task_type_id"></result>
+		<result property="newCount" column="task_new"></result>
+		<result property="histCount" column="task_hist"></result>
+		<result property="leftCount" column="task_left"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<insert id="insertTaskPlanDetails" parameterType="java.util.List">
+		INSERT INTO task_plan_detail (plan_id, task_type_id, task_new, task_hist, task_left)
+		VALUES
+		<foreach collection ="list" item="planDtl" index= "index" separator =",">
+        (
+			#{planDtl.planId}, #{planDtl.taskTypeId}, #{planDtl.newCount}, #{planDtl.histCount}, #{planDtl.leftCount}
+		)
+		</foreach >
+	</insert>
+
+</mapper>
+
+
+
+
+
+
+
+
+

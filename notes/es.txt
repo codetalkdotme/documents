@@ -1,0 +1,212 @@
+INDEX -> TYPE -> PROPERTY
+
+1. create index
+
+PUT 	http://localhost:9200/indexq/
+
+{
+    "settings": {
+        "refresh_interval": "5s",	// refresh index, should be disabled(set as -1) when do bulk load
+        "number_of_shards": 1,
+        "number_of_replicas": 0
+    },
+    "mappings": {
+        "_default_": {
+            "_all": {
+                "enabled": false
+            }
+        },
+        "question": {
+            "dynamic": false,
+            "properties": {
+                "title_cn": {
+                    "type": "text",
+					"analyzer": "ik_smart",
+					"search_analyzer": "ik_smart",
+					"include_in_all": "true",			// determine whether this is included in _all field
+					"boost": 2					// default as 1, twice the weight when it's 2
+                },
+				"title_en": {
+                    "type": "text",
+					"analyzer": "english",
+					"search_analyzer": "english",
+					"boost": 2
+                },
+				"title_suggest": {
+					"type": "completion",				// completion suggester
+					"payloads": true
+				}
+            }
+        }
+    }
+}
+
+2. index
+
+POST http://localhost:9200/indexq/question/1
+
+{
+	"title_cn": "Java properties接口的使用", 
+	"title_en": "The best usage of Java Properties API",
+	"title_suggest" : { 
+		"input" :      [ 
+			"Java properties", 
+			"Java properties接口" 
+		],
+		"weight":      15,				// 权重
+		"payloads":    {"id": 1}		// 获取搜索推荐时返回的数据
+	}
+}
+
+POST http://localhost:9200/indexq/question/2
+
+{
+	"title_cn": "Java HashMap接口的用法", 
+	"title_en": "How to use Java HashMap API?",
+	"title_suggest" : { 
+		"input" :      [ 
+			"Java HashMap", 
+			"Java HashMap接口" 
+		]
+	}
+}
+
+
+-------------------------------- bulk --------------------------------
+
+POST http://localhost:9200/_bulk
+
+Binary file
+
+{ "create": { "_index": "indexq", "_type": "question", "_id": 3 } }
+{ 
+	"title_cn": "Spring Boot找不到application.properties",
+	"title_en": "application.properties is not found in Spring Boot",
+	"title_suggest" : { 
+		"input" :      [ 
+			"Spring Boot", 
+			"application.properties" 
+		]
+	}
+}
+{ "create": { "_index": "indexq", "_type": "question", "_id": 4 } }
+{ 
+	"title_cn": "Spring, 为什么如此流行?",
+	"title_en": "Spring, why is it so popular?",
+	"title_suggest" : { 
+		"input" :      [ 
+			"Spring",
+			"为什么如此流行"
+		]
+	}
+}
+{ "create": { "_index": "indexq", "_type": "question", "_id": 5 } }
+{
+	"title_cn": "Spring 和 Java?",
+	"title_en": "Spring & Java?",
+	"title_suggest" : { 
+		"input" :      [ 
+			"Spring",
+			"Java"
+		]
+	}
+}
+
+
+3. Query 
+
+-------------------- Query All under index/type --------------------
+
+GET		http://localhost:9200/indexq/question/_search
+
+-------------------- Query Single --------------------
+
+GET 	http://localhost:9200/indexq/question/9
+
+-------------------- Query by Term --------------------
+
+GET		http://localhost:9200/indexq/question/_search?pretty=true&q=java
+
+4. suggest
+
+POST 	localhost:9200/indexq/_search
+----- document content is not filtered -----
+{
+	"_source": "suggest",
+	"suggest": {
+		"indexq": {
+			"text": "为什么",
+			"completion": {
+				"field": "title_suggest"
+			}
+		}
+	}
+}
+
+POST 	localhost:9200/indexq/_suggest
+----- document content is not filtered -----
+{
+  "indexq" : {
+    "text" : "J",
+    "completion" : {
+      "field" : "title_suggest"
+    }
+  }
+}
+
+
+5. delete
+
+-------------------------------- delete index --------------------------------
+
+DELETE http://localhost:9200/indexq/
+
+-------------------------------- delete doc ---------------------------------
+
+DELETE http://localhost:9200/indexq/question/1
+
+-------------------------------- delete by query --------------------------------
+
+POST	http://localhost:9200/indexq/question/_delete_by_query
+{
+  "query": { 
+    "match": {
+      "title_en": "spring"
+    }
+  }
+}
+
+-------------------------------- delete all under type --------------------------------
+
+POST	http://localhost:9200/indexq/question/_delete_by_query
+{
+  "query": { 
+    "match_all": {}
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

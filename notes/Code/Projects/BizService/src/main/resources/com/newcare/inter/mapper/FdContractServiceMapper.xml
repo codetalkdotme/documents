@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+						"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newcare.inter.mapper.FdContractServiceMapper">
+
+	<resultMap id="fdContractServiceMap"  type="com.newcare.inter.pojo.FdContractService">
+		<result column="contract_service_id" property="id"></result>
+	  	<result column="fd_contract_id" property="contractId"></result>
+	  	<result column="service_code" property="serviceCode"></result>
+	</resultMap>
+
+	<insert id="insertServiceList" parameterType="java.util.List">
+		INSERT INTO inter_fd_contract_services(
+		   fd_contract_id
+		  ,service_code
+		) VALUES 
+		<foreach collection="list" item="service" index="index" separator=",">
+		(
+		  #{service.contractId}, #{service.serviceCode}
+		)
+		</foreach>
+	</insert>
+	
+	<delete id="deleteContractService" parameterType="Long">
+		delete from inter_fd_contract_services where fd_contract_id = #{contractId}
+	</delete>
+	
+</mapper>   
+
+
+
+
+
+
+
+
+
+
+

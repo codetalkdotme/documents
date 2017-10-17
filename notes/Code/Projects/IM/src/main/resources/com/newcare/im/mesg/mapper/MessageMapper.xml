@@ -1,0 +1,191 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.im.mesg.mapper.MessageMapper">
+
+	<resultMap type="com.newcare.im.pojo.Message" id="imMesgMap">
+		<result property="id" column="mesg_id"></result>
+		<result property="sn" column="mesg_sn"></result>
+		<result property="content" column="mesg_content"></result>
+		<result property="status" column="mesg_status"></result>
+		<result property="fromUser" column="from_user_id"></result>
+		<result property="toUser" column="to_user_id"></result>
+		<result property="receiveDate" column="receive_date"></result>
+		<result property="sendDate" column="send_date"></result>
+		<!-- 
+		<result property="ackDate" column="ack_date"></result>
+		-->
+		<result property="fromSession" column="from_session_id"></result>
+		<result property="toSession" column="to_session_id"></result>
+		<result property="thread" column="mesg_thread"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+	
+	<insert id="insertMessage" parameterType="com.newcare.im.pojo.Message" useGeneratedKeys="true" keyProperty="id" keyColumn="mesg_id">
+		INSERT INTO im_messages(
+		   mesg_sn
+		  ,mesg_content
+		  ,mesg_status
+		  ,from_user_id
+		  ,to_user_id
+		  ,from_session_id
+		  ,to_session_id
+		  ,send_date
+		  ,mesg_thread
+		) VALUES (
+		   #{sn}
+		  ,#{content}
+		  ,#{status}
+		  ,#{fromUser}
+		  ,#{toUser}
+		  ,#{fromSession}
+		  ,#{toSession}
+		  ,#{sendDate}
+		  ,#{thread}
+		)
+	</insert>
+	
+	<update id="updateMessage" parameterType="com.newcare.im.pojo.Message">
+		UPDATE im_messages
+		   SET mesg_status = #{status}
+		<if test="sendDate != null">
+		      ,send_date = #{sendDate}
+		</if>
+		<if test="toSession != null">
+		      ,to_session_id = #{toSession}
+		</if>
+		WHERE mesg_id = #{id}
+	</update>
+	
+	<update id="updateMessageBySn" parameterType="com.newcare.im.pojo.Message">
+		UPDATE im_messages
+		   SET mesg_status = #{status}
+		<if test="ackDate != null">
+		      ,ack_date = #{ackDate}
+		</if>
+		WHERE mesg_sn = #{sn}
+	</update>
+	
+	<select id="selectMessageCount" parameterType="Long" resultType="java.util.HashMap">
+		select to_user_id, sum(msg_count) msg_count, sum(new_count) new_count from (
+			select to_user_id to_user_id, count(1) msg_count, 0 new_count from im_messages where from_user_id = #{userId} 
+			 group by to_user_id
+			 union all
+			select from_user_id to_user_id, count(1) msg_count, sum(if(mesg_status=2, 0, 1)) new_count from im_messages where to_user_id = #{userId} 
+			 group by from_user_id
+		) t group by to_user_id
+	</select>
+	
+	<select id="selectToUserMessageList" parameterType="java.util.Map" resultType="java.util.HashMap">
+		select mesg_id, from_user_id, to_user_id, mesg_sn, mesg_content, receive_date, send_date
+		  from im_messages 
+		 where ((from_user_id, to_user_id) = (#{userId}, #{toUser}) or (from_user_id, to_user_id) = (#{toUser}, #{userId}))
+		 order by create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<select id="selectMessageList" parameterType="java.util.Map" resultType="java.util.HashMap">
+		select mesg_id, from_user_id, to_user_id, mesg_sn, mesg_content, receive_date, send_date
+		  from im_messages 
+		 where (from_user_id = #{userId} or to_user_id = #{userId})
+		 order by create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<update id="batchRecvById" parameterType="java.util.List">
+		update im_messages
+		   set mesg_status = 2,
+		       send_date = CURRENT_TIMESTAMP
+		 where mesg_id in (
+		 <foreach collection ="list" item="mesgId" separator =",">#{mesgId}</foreach >		 
+		 )
+		   and mesg_status = 1
+	</update>
+	
+	<select id="countUnreadMessage" parameterType="java.util.Map" resultType="Integer">
+		select count(1) from im_messages 
+		 where to_user_id = #{toUser}
+		   and from_user_id = #{fromUser}
+		   and mesg_status = 1
+	</select>
+	
+	<select id="selectLastMesgIdList" parameterType="Long" resultType="Long">
+		select max(mesg_id) from im_messages 
+		 where from_user_id = #{userId} or to_user_id = #{userId}
+		 group by mesg_thread
+	</select>
+	
+	<select id="selectMessageIn" parameterType="java.util.List" resultMap="imMesgMap">
+		select from_user_id, to_user_id, mesg_sn, mesg_content, receive_date, send_date
+		  from im_messages 
+		 where mesg_id in (
+		 	<foreach collection ="list" item="mesgId" index= "index" separator =",">
+			#{mesgId}
+			</foreach>
+		 )
+	</select>
+	
+	<select id="countSlowRepliesWithin" parameterType="java.util.Map" resultType="java.util.HashMap">
+		select t1.to_user_id user_id, count(1) msg_count 
+		  from im_messages t1
+		 where t1.create_date between #{startTime} and #{endTime}
+		   and t1.to_user_id in (
+		   	<foreach collection="userIdList" item="userId" index="index" separator=",">#{userId}</foreach>
+		   )
+		   and not exists (select 1 from im_messages t2 
+							where t2.to_user_id = t1.from_user_id 
+							and t2.from_user_id = t1.to_user_id
+							and t2.create_date &gt; t1.create_date 
+							and t2.create_date &lt;= DATE_ADD(t1.create_date, INTERVAL #{timeSeconds} SECOND))
+		   and not exists (select 1 from im_messages t3 
+							where t3.to_user_id = t1.from_user_id 
+							and t3.from_user_id = t1.to_user_id
+							and t3.create_date &gt; t1.create_date)
+		 group by t1.to_user_id
+	</select>
+	
+	<select id="lazyHedcareListWithin" parameterType="Long" resultType="Long">
+		 select distinct t1.to_user_id
+		   from im_messages t1, 
+				im_logins t2 
+		  where t1.from_session_id = t2.session_id 
+				and t2.ticket_src_type = 'Inhabitant APP'
+		    and DATE_ADD(t1.create_date, INTERVAL #{timeSeconds} SECOND) &lt; CURRENT_TIMESTAMP
+		    and not exists (select 1 from im_messages t3
+							where t3.to_user_id = t1.from_user_id
+								and t3.from_user_id = t1.to_user_id
+								and t3.create_date &gt; t1.create_date)
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

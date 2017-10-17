@@ -1,0 +1,1 @@
+directIpLoadBalance=com.newcare.im.dubbo.loadbalance.DirectIPLoadBalance

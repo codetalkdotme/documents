@@ -1,0 +1,72 @@
+1. 配置记录错误日志到单独文件
+
+Reference: 
+https://stackoverflow.com/questions/13284535/logback-different-files-for-different-levels
+
+在appender中添加filter:
+-------------------------------------------------------------
+<filter class="ch.qos.logback.classic.filter.LevelFilter">
+	<level>ERROR</level>
+	<onMatch>ACCEPT</onMatch>
+	<onMismatch>DENY</onMismatch>
+</filter>
+-------------------------------------------------------------
+
+完整示例
+-------------------------------------------------------------------------------------------------------
+<!-- ERROR appender -->
+<appender name="ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	<file>${java.io.tmpdir}/auth.err</file>
+	<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+		<Pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n</Pattern>
+	</encoder>
+
+	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		<fileNamePattern>${java.io.tmpdir}/auth.%d{yyyy-MM-dd}.%i.err</fileNamePattern>
+		<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+			<maxFileSize>10MB</maxFileSize>
+		</timeBasedFileNamingAndTriggeringPolicy>
+		<maxHistory>30</maxHistory>
+	</rollingPolicy>
+	
+	<filter class="ch.qos.logback.classic.filter.LevelFilter">
+		<level>ERROR</level>
+		<onMatch>ACCEPT</onMatch>
+		<onMismatch>DENY</onMismatch>
+	</filter>
+</appender>
+
+<!-- 从高到地低 OFF 、 FATAL 、 ERROR 、 WARN 、 INFO 、 DEBUG 、 TRACE 、 ALL -->
+<logger name="com.newcare" level="DEBUG" additivity="false">
+	<appender-ref ref="FILE" />
+	<appender-ref ref="STDOUT" />
+	<appender-ref ref="ERROR" />
+</logger>
+
+<root level="INFO">
+	<appender-ref ref="FILE" />
+	<appender-ref ref="STDOUT" />
+	<appender-ref ref="ERROR" />
+</root>
+-------------------------------------------------------------------------------------------------------
+
+2. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

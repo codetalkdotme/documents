@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	    http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:service interface="com.newcare.auth.service.IBizAuthService" ref="bizAuthService"/>
+    <dubbo:service interface="com.newcare.service.IBizService" ref="bizService"/>
+
+    <dubbo:service interface="com.newcare.fnd.service.IRoleService" ref="roleService"/>
+    
+    <dubbo:service interface="com.newcare.fnd.service.ILookupService" ref="lookupService"/>
+    
+    <dubbo:service interface="com.newcare.fnd.service.community.ICommunityPositionService" ref="communityPositionService"/>
+    
+    <dubbo:service interface="com.newcare.fnd.service.area.IAreaService" ref="areaService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IEquipmentService" ref="equipmentService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IFundService" ref="fundService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IGroundService" ref="groundService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IServiceStationService" ref="serviceStationService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IAreaStationService" ref="areaStationService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IStaffService" ref="staffService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IBuildingService" ref="buildingService"/>
+    <dubbo:service interface="com.newcare.fnd.service.IOrganizationService" ref="organizationService"/>
+    <dubbo:service interface="com.newcare.fnd.service.community.IFamilyDoctorGroupService" ref="familyDoctorGroupService"/>
+    
+    <dubbo:service interface="com.newcare.fnd.service.activity.IActivityManagementService" ref="activityManagementService"/>
+    
+    <dubbo:service interface="com.newcare.article.service.IArticleService" ref="articleService"/>
+    <dubbo:service interface="com.newcare.inter.service.LectureRemoteService" ref="lectureRemoteService"/>
+    
+    <dubbo:service interface="com.newcare.app.service.AppFamousDoctorService" ref="appFamousDoctorService"/>
+    <dubbo:service interface="com.newcare.bg.service.TaskMonitorService" ref="taskMonitorService"/>
+    <dubbo:service interface="com.newcare.inter.service.DocVaccineRecordService" ref="docVaccineRecordService"/>
+    <dubbo:service interface="com.newcare.abnormaldata.service.AbnormalDataService" ref="abnormalDataService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterCircleService" ref="interCircleService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterCirclePostsService" ref="interCirclePostsService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterCirclePersonService" ref="interCirclePersonService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterArticleService" ref="interArticleService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterAppointmentService" ref="interAppointmentService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterService" ref="interService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterDoctorService" ref="interDoctorService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterDoctorDiseaseService" ref="interDoctorDiseaseService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterHospitalDepartmentService" ref="interHospitalDepartmentService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterHospitalService" ref="interHospitalService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterGoodsTypeService" ref="interGoodsTypeService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterShopGoodsService" ref="interShopGoodsService"/>
+    <dubbo:service interface="com.newcare.inter.service.InterDiseaseService" ref="interDiseaseService"/>
+    <dubbo:service interface="com.newcare.act.service.ActActivitiesService" ref="actActivitiesService"/>
+    <dubbo:service interface="com.newcare.act.service.ActActivitiesStaffService" ref="actActivitiesStaffService"/>
+    <dubbo:service interface="com.newcare.act.service.ActFilesService" ref="actFilesService"/>
+    <dubbo:service interface="com.newcare.act.service.ActPersonsService" ref="actPersonsService"/>
+    <dubbo:service interface="com.newcare.doc.service.HouseholdHeaderService" ref="householdHeaderService"/>
+
+    <dubbo:service interface="com.newcare.doc.service.IResidentService" ref="residentService"/>
+
+    <dubbo:service interface="com.newcare.doc.service.IResidentGroupService" ref="residentGroupService"/>
+
+    <dubbo:service interface="com.newcare.eva.service.IEvaluateService" ref="evaluateService"/>
+    <dubbo:service interface="com.newcare.doc.service.IHealthExaminationService" ref="healthExaminationService"/>
+    <dubbo:service interface="com.newcare.fnd.service.IMenuService" ref="menuService"/>
+    <dubbo:service interface="com.newcare.act.service.IReportService" ref="reportService"/>
+    <dubbo:service interface="com.newcare.fnd.service.INoticeService" ref="noticeService"/>
+    <dubbo:service interface="com.newcare.app.service.CarouselRecordService" ref="carouselRecordService"/>
+    <dubbo:service interface="com.newcare.app.service.CompanyIntroService" ref="companyIntroService"/>
+
+   <!--  <dubbo:service interface="com.newcare.doc.service.ChildrenVisitService" ref="childrenVisitService"/> -->
+    <dubbo:service interface="com.newcare.doc.service.TreatmentService" ref="treatmentService" />
+    <dubbo:service interface="com.newcare.doc.service.PuerperaExamService" ref="puerperaExamService" />
+    <dubbo:service interface="com.newcare.doc.service.ResidentInfoService" ref="residentInfoService" />
+    <dubbo:service interface="com.newcare.doc.service.DiseaseGroupService" ref="diseaseGroupService" />
+    
+    <dubbo:service interface="com.newcare.operational.service.IOperationalService" ref="operationalService" />
+    
+    <dubbo:service interface="com.newcare.fnd.service.IWhitelistFileService" ref="wlFileService" />
+    
+    <!-- app -->
+    <dubbo:service interface="com.newcare.app.service.IStationIntroService" ref="stationIntroService" />
+    
+    <dubbo:service interface="com.newcare.p3.jsms.service.IJsmsService" ref="smsService" />
+
+    <bean id="actActivitiesService" class="com.newcare.act.service.impl.ActActivitiesServiceImpl"/>
+    <bean id="actActivitiesStaffService" class="com.newcare.act.service.impl.ActActivitiesStaffServiceImpl"/>
+    <bean id="actFilesService" class="com.newcare.act.service.impl.ActFilesServiceImpl"/>
+    <bean id="actPersonsService" class="com.newcare.act.service.impl.ActPersonsServiceImpl"/>
+    
+    <bean id="interGoodsTypeService" class="com.newcare.inter.service.impl.InterGoodsTypeServiceImpl"/>
+    <bean id="interShopGoodsService" class="com.newcare.inter.service.impl.InterShopGoodsServiceImpl"/>
+    <bean id="interDiseaseService" class="com.newcare.inter.service.impl.InterDiseaseServiceImpl"/>
+    <bean id="interHospitalService" class="com.newcare.inter.service.impl.InterHospitalServiceImpl"/>
+    <bean id="interHospitalDepartmentService" class="com.newcare.inter.service.impl.InterHospitalDepartmentServiceImpl" />
+    <bean id="interDoctorDiseaseService" class="com.newcare.inter.service.impl.InterDoctorDiseaseServiceImpl" />
+    <bean id="interDoctorService" class="com.newcare.inter.service.impl.InterDoctorServiceImpl" />
+    <bean id="interService" class="com.newcare.inter.service.impl.InterServiceImpl" />
+    <bean id="interAppointmentService" class="com.newcare.inter.service.impl.InterAppointmentServiceImpl" />
+    <bean id="interArticleService" class="com.newcare.inter.service.impl.InterArticleServiceImpl" />
+    <bean id="interCirclePersonService" class="com.newcare.inter.service.impl.InterCirclePersonServiceImpl" />
+    <bean id="interCirclePostsService" class="com.newcare.inter.service.impl.InterCirclePostsServiceImpl" />
+    <bean id="interCircleService" class="com.newcare.inter.service.impl.InterCircleServiceImpl" />
+    <bean id="abnormalDataService" class="com.newcare.abnormaldata.service.impl.AbnormalDataServiceImpl" />
+    <bean id="docVaccineRecordService" class="com.newcare.inter.service.impl.DocVaccineRecordServiceImpl" />
+    <bean id="taskMonitorService" class="com.newcare.bg.service.impl.TaskMonitorServiceImpl" />
+    <bean id="appFamousDoctorService" class="com.newcare.app.service.impl.AppFamousDoctorServiceImpl" />
+
+    <dubbo:reference interface="com.newcare.auth.service.IAuthService" id="authService" retries="0" check="false" timeout="5000"></dubbo:reference>
+    <dubbo:reference interface="com.newcare.im.service.IMService" id="imService" retries="0" check="false" timeout="5000"></dubbo:reference>
+
+
+	<bean id="docDataViewService" class="com.newcare.timedtask.service.impl.DocDataViewServiceImpl" />
+	<bean id="appoImmuneService" class="com.newcare.timedtask.service.impl.AppoImmuneServiceImpl" />
+	<bean id="timeOutTaskService" class="com.newcare.timedtask.service.impl.TimeOutTaskServiceImpl" />
+
+</beans>

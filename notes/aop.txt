@@ -1,0 +1,93 @@
+1. Spring AOP - precedence
+
+#### Rules 
+
+* The aspect with higher precedence execut es its before advice on a join point before the aspect with lower precedence.
+* The aspect with higher precedence executes its after advice on a join point after the aspect with lower precedence.
+* The around advice in the higher-precedence aspect encloses the around advice in the lower-precedence aspect. 
+
+An aspect with a lower value for the order  property has higher precedence over an aspect with a higher value.
+
+Example:
+-----------------------------------------------------------------------------------------
+@Order(6)
+public class ProductAuditAspect
+
+@Order(10)
+public class InventoryAuditAspect
+
+-- After
+addProduct, product: AJIA, quantity: 6000
+inventoryUpdateAudit, product: AJIA, quantity: 6000
+productUpdateAudit, product: AJIA, quantity: 6000
+
+-- Before
+productUpdateAudit, product: AJIA, quantity: 6000
+inventoryUpdateAudit, product: AJIA, quantity: 6000
+addProduct, product: AJIA, quantity: 6000
+
+- Multiple Before / After advices
+	1 single proxy created, with multiples advisors well ordered by precedence
+	
+- Multiple Around advices
+	1 single proxy created, with multiples advisors well enclosing or enclosed by precedence
+	
+- Before & Around
+	-- Precedence: before > around
+	---- Execution: before -> around before -> target -> around after
+	
+	-- Precedence: before < around
+	---- Execution: around before -> before -> target -> around after
+	
+- After & Around
+	-- Precedence: after > around
+	---- Execution: around before -> target -> around after -> after
+	
+	-- Precedence: after < around
+	---- Execution: around before -> target -> after -> around after
+-----------------------------------------------------------------------------------------
+
+2. current proxy
+
+First specify:
+--------------------------------------------
+@EnableAspectJAutoProxy(exposeProxy = true)
+--------------------------------------------
+
+Use: 
+--------------------------------------------------------------------------
+((InventoryService)AopContext.currentProxy()).isProductAvailable(product, quantity)
+--------------------------------------------------------------------------
+
+3. Order of @Transactional
+
+Use:
+--------------------------------------------------------------------------
+@EnableTransactionManagement(order = Ordered.HIGHEST_PRECEDENCE) // or whatever order
+--------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

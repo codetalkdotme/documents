@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.p3.jsms.mapper.JsmsMapper">
+	
+	<resultMap type="com.newcare.p3.jsms.pojo.JsmsMsg" id="jsmsMsgMap">
+		<result property="id" column="sms_id"></result>
+		<result property="mobile" column="sms_mobile"></result>
+		<result property="temp" column="jsms_temp"></result>
+		<result property="status" column="sms_status"></result>
+		<result property="param1" column="jsms_param1"></result>
+		<result property="value1" column="jsms_value1"></result>
+		<result property="param2" column="jsms_param2"></result>
+		<result property="value2" column="jsms_value2"></result>
+		<result property="param3" column="jsms_param3"></result>
+		<result property="value3" column="jsms_value3"></result>
+		<result property="param4" column="jsms_param4"></result>
+		<result property="value4" column="jsms_value4"></result>
+		<result property="param5" column="jsms_param5"></result>
+		<result property="value5" column="jsms_value5"></result>
+		<result property="attribute1" column="attribute1"></result>
+		<result property="attribute2" column="attribute2"></result>
+		<result property="attribute3" column="attribute3"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<select id="selectJsmsMsg" parameterType="java.util.Map" resultMap="jsmsMsgMap">
+		select sms_id, sms_status, sms_mobile, jsms_temp, jsms_param1, jsms_value1, jsms_param2, 
+			   jsms_value2, jsms_param3, jsms_value3, jsms_param4, jsms_value4, jsms_param5, jsms_value5
+		  from p3_jsms_msg
+		 where 1 = 1
+		 	<if test="status != null">
+				and sms_status = #{status}
+			</if>
+		 order by create_date asc 
+		  <if test="begin != null and count != null">
+				limit #{begin}, #{count}
+		  </if>
+	</select>
+
+	<insert id="insertJsmsMsg" parameterType="com.newcare.p3.jsms.pojo.JsmsMsg" 
+			useGeneratedKeys="true" keyProperty="id" keyColumn="sms_id">
+		INSERT INTO p3_jsms_msg (sms_mobile, jsms_temp, jsms_param1, jsms_value1, jsms_param2, 
+								 jsms_value2, jsms_param3, jsms_value3, jsms_param4, jsms_value4, 
+								 jsms_param5, jsms_value5, attribute1, attribute2, attribute3)
+		VALUES (
+			#{mobile}, #{temp}, #{param1}, #{value1}, #{param2}, #{value2}, #{param3}, #{value3}, 
+			#{param4}, #{value4}, #{param5}, #{value5}, #{attribute1}, #{attribute2}, #{attribute3}
+		)
+	</insert>
+	
+	<insert id="insertJsmsMsgList" parameterType="java.util.List">
+		INSERT INTO p3_jsms_msg (sms_mobile, jsms_temp, jsms_param1, jsms_value1, jsms_param2, 
+								 jsms_value2, jsms_param3, jsms_value3, jsms_param4, jsms_value4, 
+								 jsms_param5, jsms_value5, attribute1, attribute2, attribute3)
+		VALUES 
+		<foreach collection ="list" item="msg" index= "index" separator =",">
+		(
+			#{msg.mobile}, #{msg.temp}, #{msg.param1}, #{msg.value1}, #{msg.param2}, #{msg.value2}, #{msg.param3}, #{msg.value3}, 
+			#{msg.param4}, #{msg.value4}, #{msg.param5}, #{msg.value5}, #{msg.attribute1}, #{msg.attribute2}, #{msg.attribute3}
+		)
+		</foreach>
+	</insert>
+	
+	<update id="updateMsgSent" parameterType="Long">
+		update p3_jsms_msg set sms_status = 2 where sms_id = #{msgId}
+	</update>
+	
+	<update id="updateMsgSentByList" parameterType="java.util.List">
+		update p3_jsms_msg set sms_status = 2 where sms_id in (
+			<foreach collection ="list" item="msgId" index= "index" separator =",">
+			#{msgId}
+			</foreach>
+		)
+	</update>
+	
+	<select id="selectHAlertMaxDateIn" parameterType="String" resultType="java.util.HashMap">
+		select jsms_value1 supervisorUid, jsms_value2 hecadreUid, max(create_date) createDate 
+		  from p3_jsms_msg
+		 where attribute1 = 'HecadreAlert'
+		   and (jsms_value1, jsms_value2) in ${inClause}
+	 	group by jsms_value1, jsms_value2
+	</select>
+	
+</mapper> 

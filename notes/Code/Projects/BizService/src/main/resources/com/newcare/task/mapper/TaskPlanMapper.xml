@@ -1,0 +1,89 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.task.mapper.TaskPlanMapper">
+
+	<resultMap type="com.newcare.task.pojo.TaskPlan" id="taskPlanResultMap">
+		<result property="id" column="plan_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="status" column="plan_status"></result>
+		<result property="createDate" column="create_date"></result>
+		<collection property="dtlList" ofType="com.newcare.task.pojo.TaskPlanDetail">  
+            <result property="planId" column="plan_id"></result>
+			<result property="taskTypeId" column="task_type_id"></result>
+			<result property="taskTypeName" column="task_type_name"></result>
+			<result property="taskTypeHpName" column="task_type_name_hp"></result>
+			<result property="newCount" column="task_new"></result>
+			<result property="histCount" column="task_hist"></result>
+			<result property="leftCount" column="task_left"></result>
+			<result property="createDate" column="create_date"></result>
+        </collection>
+	</resultMap>
+
+	<select id="selectActiveTaskPlan" parameterType="Long" resultMap="taskPlanResultMap">
+		SELECT a.plan_id, a.user_id, a.plan_status, a.create_date, 
+			   b.plan_id, b.task_type_id, b.task_new, b.task_hist, b.task_left, b.create_date,
+			   c.task_type_name, c.task_type_name_hp
+		FROM task_plans a, task_plan_detail b, task_types c
+		WHERE a.user_id = #{id}
+		  AND a.plan_status = "A"
+		  AND a.plan_id = b.plan_id
+		  AND b.task_type_id = c.task_type_id
+		  AND c.task_type_status = 1
+		order by c.task_type_order ASC
+	</select>
+	
+	<insert id="insertTaskPlan" parameterType="com.newcare.task.pojo.TaskPlan">
+		INSERT INTO task_plans (plan_id, user_id, plan_status)
+		VALUES (
+			#{id}, #{userId}, #{status}
+		) 
+	</insert>
+	
+	<update id="deactiveTaskPlan" parameterType="String">
+		UPDATE task_plans SET plan_status = 'I' where plan_id = #{id}
+	</update>
+	
+	<!-- 减少入户数量 -->
+	<update id="decrHomeLeft" parameterType="Long">
+		update task_plan_detail a
+		   set a.task_left = a.task_left - 1
+		 where a.task_type_id = 1
+		   and a.task_left > 0
+		   and exists (select 1 from task_plans b where b.plan_status = 'A' and b.user_id = #{userId} and b.plan_id = a.plan_id)
+	</update>
+	
+	<update id="decrOther" parameterType="java.util.Map">
+		update task_plan_detail a
+		   set a.task_left = a.task_left - 1
+		 where a.task_type_id = #{taskTypeId}
+		   and a.task_left > 0
+		   and exists (select 1 from task_plans b where b.plan_status = 'A' and b.user_id = #{userId} and b.plan_id = a.plan_id)
+	</update>
+	
+	<select id="countDocBetween" parameterType="java.util.Map" resultType="Integer">
+		select sum(task_new + task_hist - task_left)
+		  from task_plans a, task_plan_detail b 
+		 where a.user_id = #{userId} and a.create_date between #{startDate} and #{endDate}
+		   and a.plan_id = b.plan_id
+		   and b.task_type_id = 1
+	</select>
+	
+	<select id="countVisitBetween" parameterType="java.util.Map" resultType="Integer">
+		select sum(task_new + task_hist - task_left)
+		  from task_plans a, task_plan_detail b 
+		 where a.user_id = #{userId} and a.create_date between #{startDate} and #{endDate}
+		   and a.plan_id = b.plan_id
+		   and b.task_type_id != 1
+	</select>
+	
+</mapper>
+
+
+
+
+
+
+
+
+

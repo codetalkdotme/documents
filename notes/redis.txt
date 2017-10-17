@@ -1,0 +1,323 @@
+1. Install
+
+---------------------------------
+useradd devuser
+usermod -aG wheel devuser
+
+As root, run `visudo` uncomment: 
+
+%wheel  ALL=(ALL)       ALL
+
+sudo ls -la /root
+---------------------------------
+
+wget http://download.redis.io/releases/redis-3.2.8.tar.gz
+tar xzf redis-3.2.8.tar.gz
+cd redis-3.2.8
+make
+sudo make install
+
+
+sudo mkdir /etc/redis
+sudo mkdir /var/redis
+
+# port number used to identify PID & conf file
+sudo cp utils/redis_init_script /etc/init.d/redis_6379 
+
+sudo cp redis.conf /etc/redis/6379.conf
+
+# data & working directory
+sudo mkdir /var/redis/6379
+
+# configure
+
+sudo vim /etc/redis/6379.conf
+------------------------------------------
+daemonize yes
+pidfile
+port
+loglevel
+logfile   /var/log/redis_6379.log
+dir /var/redis/6379 #!important
+
+appendonly yes # 启用AOF持久化（对于认证服务器）
+
+protected-mode no
+bind 192.168.1.251 127.0.0.1
+------------------------------------------
+
+
+# service
+
+sudo vim /etc/init.d/redis_6379
+
+Add line: # chkconfig: 2345 20 80
+
+sudo  chkconfig --add /etc/init.d/redis_6379
+
+
+
+Benchmark:
+ redis-benchmark -q -n 1000 -c 10 -P 5
+
+---------------------------
+Cluster
+---------------------------
+
+Configure: 
+
+cluster-enabled yes
+cluster-config-file nodes-6379.conf
+
+
+---------------------------------------------------------------------------------
+
+redis-trib
+
+http://weizijun.cn/2016/01/08/redis%20cluster%E7%AE%A1%E7%90%86%E5%B7%A5%E5%85%B7redis-trib-rb%E8%AF%A6%E8%A7%A3/
+
+sudo cp src/redis-trib.rb /usr/local/bin/redis-trib.rb
+
+
+sudo mkdir /var/redis/6381
+sudo mkdir /var/redis/6382
+sudo mkdir /var/redis/6383
+sudo mkdir /var/redis/6384
+
+batch change /etc/init.d/redis_{PORT} & /etc/redis/{PORT}.conf
+
+
+sudo service redis_6379 start
+sudo service redis_6380 start
+sudo service redis_6381 start
+sudo service redis_6382 start
+sudo service redis_6383 start
+sudo service redis_6384 start
+
+--------------------------
+
+RVM
+
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+
+curl -sSL https://get.rvm.io | bash -s stable --ruby
+
+gem sources -a  https://rubygems.org/
+gem install redis
+
+ruby /usr/local/bin/redis-trib.rb create --replicas 1 127.0.0.1:6379 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 
+
+
+
+Error: Node is not empty
+Fix: Connect to per redis instance, run `flushdb`
+
+Error: ERR Slot 5282 is already busy
+Fix: Connect to per redis instance, run `flushall` `cluster reset soft`
+
+
+---------------------------------
+redis-cli -p 6380
+cluster info
+---------------------------------
+
+
+
+Config:
+--------------------------------------
+
+# Allow other hosts to access 
+protected-mode no
+bind 192.168.1.250 127.0.0.1
+
+--------------------------------------
+
+Spring data cache:
+--------------------------------------
+
+If @Cacheable annoated method is called from the method of the same object, it doesn't work!
+
+Fix:
+Lower @Cacheable from Service to DAO layer
+
+集群配置需要参数:
+spring.redis.cluster.max-redirects=6
+
+--------------------------------------
+
+############################### 持久化 ###############################
+
+Snapshot(RDB) vs AOF
+
+AOF提供了更好的持久性，Snapshot可能会导致一段时间数据的丢失。AOF配置：
+
+appendonly yes           	# 启用aof持久化方式
+
+# appendfsync always   		# 每次收到写命令就立即强制写入磁盘，最慢的，但是保证完全的持久化。不推荐！
+appendfsync everysec     	# 每秒钟强制写入磁盘一次，在性能和持久化方面做了折中。推荐！
+# appendfsync no 
+
+AOF 和 Snapshot(RDB)可以同时启用，redis在启动时如果发现AOF已启用，则使用AOF方式！
+
+关闭持久化
+------------------------------
+1. appendonly no
+2. 注释所有save指令
+
+Refer: https://stackoverflow.com/questions/28785383/how-to-disable-persistence-with-redis
+------------------------------
+
+---------------------------------------------------------------------------------------------------
+
+redis-cli
+
+集群环境-c
+redis-cli -c -p 6383
+
+INCR 
+--------------------------------------
+
+get KEY_USER_ID
+# -> Redirected to slot [14421] located at 192.168.1.251:6381
+# "12"
+
+INCR KEY_USER_ID
+# (integer) 13
+
+2. Security 
+
+配置密码, 去掉下面行首的#
+-----------------------------------------
+requirepass welcome1
+-----------------------------------------
+
+配置密码后关闭redis, 使用`shutdown`命令
+
+redis-cli -p 8001
+auth welcome1
+
+对于HA环境, 还需要在配置文件中添加如下配置, 确保主从之间的通讯顺利进行: 
+-----------------------------------------
+masterauth welcome1
+-----------------------------------------
+
+TTL
+-----------------------------------------
+https://redis.io/commands/ttl
+-----------------------------------------
+
+Why performant?
+-----------------------------------------
+https://stackoverflow.com/questions/10489298/redis-is-single-threaded-then-how-does-it-do-concurrent-i-o
+-----------------------------------------
+
+Sorted Set 
+-----------------------------------------
+https://redis.io/topics/data-types
+https://redis.io/commands#sorted_set
+-----------------------------------------
+
+3. Spring Boot Integration
+
+```pom.xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-data-redis</artifactId>
+	<version>1.5.2.RELEASE</version>
+</dependency>
+```
+
+-- Cluster
+
+```application.properties
+spring.redis.pool.max-idle=8
+spring.redis.pool.min-idle=0
+spring.redis.pool.max-active=8
+spring.redis.pool.max-wait=-1
+spring.redis.cluster.nodes[0]=192.168.1.250:6379
+spring.redis.cluster.nodes[1]=192.168.1.250:6380
+spring.redis.cluster.nodes[2]=192.168.1.250:6381
+spring.redis.cluster.nodes[3]=192.168.1.250:6382
+spring.redis.cluster.nodes[4]=192.168.1.250:6383
+spring.redis.cluster.nodes[5]=192.168.1.250:6384
+spring.redis.cluster.max-redirects=6
+```
+
+-- HA
+
+```application.properties
+spring.redis.sentinel.master=authmaster
+spring.redis.sentinel.nodes=192.168.1.251:26379,192.168.1.250:26379,192.168.1.250:26380
+```
+
+```Java
+@SpringBootApplication
+@ComponentScan(basePackages = {
+		"com.newcare.cache.config",
+		"com.newcare.cache.service.impl",
+})
+public class BizMain
+{
+```
+
+-- Password
+spring.redis.password=welcome1
+
+-- Safeguard App event cache failes
+
+https://dzone.com/articles/safeguard-spring-app-from-cache-failure
+
+4. setNX
+
+基于setNX实现分布式锁, 示例:
+
+```Java
+String lockKey = "JsmsTask-" + DateUtils.formatDate(new Date(), "yyyyMMddHHmm");
+if(!cacheService.setNX(lockKey, "X")) return;
+
+// ...
+```
+
+5. backup & restore
+
+Use rdb file
+
+-- backup
+redis-cli -p 9002
+save
+
+Note: 执行save命令后会在参数dir指定的目录生成dump.rdb文件, 包含当前实例所有数据
+
+-- restore
+* 首先关闭AOF模式
+
+# appendonly yes
+
+* 停止redis实例
+* 拷贝dump.rdb到参数dir指定的目录
+* 启动redis
+
+Use aof file
+
+-- backup
+redis-cli -p 9002
+bgrewriteaof
+
+Note: 执行bgrewriteaof命令后会在参数dir指定的目录生成appendonly.aof文件, 包含当前实例所有数据
+
+-- restore
+* 首先启用AOF模式
+
+appendonly yes
+
+* 停止redis实例
+* 拷贝appendonly.aof到参数dir指定的目录
+* 启动redis
+
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.task.mapper.TaskTypeMapper">
+
+	<resultMap type="com.newcare.task.pojo.TaskType" id="taskTypeResultMap">
+		<result property="id" column="task_type_id"></result>
+		<result property="name" column="task_type_name"></result>
+		<result property="hpName" column="task_type_name_hp"></result>
+		<result property="tenementId" column="tenement_id"></result>
+		<result property="status" column="task_type_status"></result>
+		<result property="order" column="task_type_order"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<select id="selectTypesExceptHome" resultMap="taskTypeResultMap">
+		select task_type_id, task_type_name, task_type_name_hp, task_type_order, task_type_status
+		  from task_types
+		where task_type_status = 1 and task_type_id != 1
+		 order by task_type_order ASC
+	</select>
+	
+	<select id="selectAllTypes" resultMap="taskTypeResultMap">
+		select task_type_id, task_type_name, task_type_name_hp, task_type_order, task_type_status
+		  from task_types
+		where task_type_status = 1
+		 order by task_type_order ASC
+	</select>
+
+</mapper>

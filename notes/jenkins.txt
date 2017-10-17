@@ -1,0 +1,87 @@
+1. Install & Run
+
+Download JDK
+
+wget http://mirrors.jenkins.io/war-stable/latest/jenkins.war
+
+/home/devuser/.jenkins/secrets/initialAdminPassword
+
+http://192.168.1.251:8080
+
+* Maven
+
+V3.3.9
+
+/opt/apache-maven-3.3.9
+
+.bash_profile
+
+```bash
+export M2_HOME=/opt/apache-maven-3.3.9
+PATH=$PATH:$HOME/bin:$M2_HOME/bin
+```
+
+Run
+
+java -jar jenkins.war
+
+Restart
+
+http://192.168.1.251:8080/safeRestart
+
+2. Plugins
+
+Subversion Plug-in
+Publish over SSH
+Maven Integration plugin
+Parameterized Trigger Plugin
+
+Role-based Authorization Strategy
+
+3. Config
+
+系统管理 -> Global Tool Configuration
+	- 配置 JKD & Maven
+	
+4. New Project
+
+新建项目, 选择Maven项目
+
+添加Pre Steps设置依赖的项目(逗号分隔), 依赖的项目构建完成后会自动放到本地仓库 ~/.m2/repository/, 在构建目标项目时可以引用.
+
+5. 角色 & 用户
+
+系统设置 -> Configure Global Security, 设置授权策略: Role-Based Strategy
+
+系统设置 -> 管理用户, 添加用户
+
+系统设置 -> Manage and Assign Roles, 创建角色比如javadev, 分配给用户!
+
+6. Issues
+
+* Missing Overall/read
+
+Edit ~/.jenkins/config.xml
+
+<useSecurity>true</useSecurity> 	=====> <useSecurity>false</useSecurity>
+
+* 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

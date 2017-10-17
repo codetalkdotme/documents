@@ -1,0 +1,46 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.fnd.mapper.MemoMapper">
+
+
+	<resultMap type="com.newcare.fnd.pojo.Memo" id="memoMap">
+		<result property="id" column="memo_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="title" column="memo_title"></result>
+		<result property="content" column="memo_content"></result>
+		<result property="lastUpdate" column="last_update"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<insert id="insertMemo" parameterType="com.newcare.fnd.pojo.Memo" useGeneratedKeys="true" keyProperty="id" keyColumn="memo_id">
+		insert into fnd_memos (user_id, memo_title, memo_content) values (#{userId}, #{title}, #{content});
+	</insert>
+	
+	<update id="updateMemo" parameterType="com.newcare.fnd.pojo.Memo">
+		update fnd_memos
+			set last_update = now() 
+			<if test="title != null"> 
+		   	, memo_title = #{title} 
+		  	</if>
+		  	<if test="content != null"> 
+		   	, memo_content = #{content} 
+		  	</if>
+		 where memo_id = #{id} 
+	</update>
+	
+	<select id="listMemoByUser" parameterType="java.util.Map" resultMap="memoMap">
+		select memo_id, user_id, memo_title, memo_content, last_update, create_date
+		  from fnd_memos 
+		 where user_id = #{userId} 
+		 order by create_date desc
+		 limit #{begin}, #{count}
+	</select>
+	
+	<select id="selectMemoByIdAndUser" parameterType="java.util.Map" resultMap="memoMap">
+		select memo_id, user_id, memo_title, memo_content, last_update, create_date
+		  from fnd_memos 
+		 where memo_id = #{memoId} and user_id = #{userId}
+	</select>
+
+</mapper>

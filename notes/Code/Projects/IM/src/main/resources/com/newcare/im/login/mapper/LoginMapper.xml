@@ -1,0 +1,100 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.newcare.im.login.mapper.LoginMapper">
+
+	<resultMap type="com.newcare.im.pojo.Login" id="imLoginMap">
+		<result property="id" column="login_id"></result>
+		<result property="userId" column="user_id"></result>
+		<result property="sessionId" column="session_id"></result>
+		<result property="status" column="login_status"></result>
+		<result property="loginName" column="ticket_login_name"></result>
+		<result property="srcType" column="ticket_src_type"></result>
+		<result property="transportKey" column="ticket_transport_key"></result>
+		<result property="ticketCreateDate" column="ticket_create_date"></result>
+		<result property="clientIp" column="client_ip"></result>
+		<result property="proxyIp" column="proxy_ip"></result>
+		<result property="logoutDate" column="logout_date"></result>
+		<result property="createDate" column="create_date"></result>
+	</resultMap>
+
+	<insert id="insertLogin" parameterType="com.newcare.im.pojo.Login" useGeneratedKeys="true" keyProperty="id" keyColumn="login_id">
+		INSERT INTO im_logins(
+		   user_id
+		  ,session_id
+		  ,ticket_login_name
+		  ,ticket_src_type
+		  ,ticket_transport_key
+		  ,ticket_create_date
+		  ,client_ip
+		  ,proxy_ip
+		) VALUES (
+		   #{userId}
+		  ,#{sessionId}
+		  ,#{loginName}
+		  ,#{srcType}
+		  ,#{transportKey}
+		  ,#{ticketCreateDate}
+		  ,#{clientIp}
+		  ,#{proxyIp}
+		)
+	</insert>
+	
+	<update id="logoutSession" parameterType="java.lang.String">
+		update im_logins set login_status = 2, logout_date = now()
+		 where session_id = #{sessionId}
+	</update>
+	
+	<update id="logoutUser" parameterType="Long">
+		update im_logins set login_status = 2, logout_date = now()
+		 where user_id = #{userId} and login_status = 1
+	</update>
+	
+	<select id="selectLoginBySession" parameterType="java.lang.String" resultMap="imLoginMap">
+		SELECT login_id, user_id, session_id, login_status, ticket_login_name, 
+		 	   ticket_src_type, ticket_transport_key, ticket_create_date, client_ip, proxy_ip, 
+		 	   logout_date, create_date 
+		  FROM im_logins
+		 WHERE session_id = #{sessionId}
+	</select>
+	
+	<select id="selectActiveLogin" parameterType="Long" resultMap="imLoginMap">
+		SELECT login_id, user_id, session_id, login_status, ticket_login_name, 
+		 	   ticket_src_type, ticket_transport_key, ticket_create_date, client_ip, proxy_ip, 
+		 	   logout_date, create_date 
+		  FROM im_logins
+		 WHERE user_id = #{userId} and login_status = 1
+	</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,149 @@
+1. Load Balance 
+
+Everytime call remote service, determine which Invoker to use:
+
+	1. AbstractClusterInvoker.select -> doSelect
+	2. LoadBalance.select
+	
+		Default: RandomLoadBalance
+		
+Custom LB:
+
+public xxxLoadBalance implements com.alibaba.dubbo.rpc.cluster.LoadBalance {
+	
+	// ...
+	
+}
+
+Config:
+
+<dubbo:reference id="bizService" interface="com.newcare.service.IBizService" loadBalance="roundrobin"/>
+
+-- Custom Load Balance --
+
+```java
+public class DirectIPLoadBalance extends AbstractLoadBalance {
+
+	public static final String METHOD_DOCALLBACK = "doCallback";
+	
+	@Override
+	protected <T> Invoker<T> doSelect(List<Invoker<T>> invokers, URL url, Invocation invocation) {
+		Object[] arguments = invocation.getArguments();
+		ProtocalPackage pack = (ProtocalPackage)arguments[0];
+		
+		for(Invoker invoker : invokers) {
+			URL proxyUrl = invoker.getUrl();
+			if(proxyUrl.getIp().equals(pack.getProxyIp())) {
+				return invoker;
+			}
+		}
+		
+		return null;
+	}
+
+}
+```
+
+src/main/resources/META-INF/dubbo/com.alibaba.dubbo.rpc.cluster.LoadBalance
+
+```text
+directIpLoadBalance=com.newcare.im.dubbo.loadbalance.DirectIPLoadBalance
+```
+
+dubbo-provider.xml
+
+```xml
+<dubbo:reference id="imCbService"
+		interface="com.newcare.im.service.IMCallbackService" retries="0" check="false"
+		timeout="5000" loadbalance="directIpLoadBalance"/>
+```
+
+2. Errors
+
+- EndOfStreamException: Unable to read additional data from client sessionid
+
+Use nohup to run
+
+- java.util.concurrent.RejectedExecutionException: Thread pool is EXHAUSTED!
+
+服务方配置:
+--------------------------------------
+spring.dubbo.protocol.threads=200
+<dubbo:provider port="20920" timeout="20000" threads="200"/>
+--------------------------------------
+
+3. Spring Boot Integeration
+
+```pom.xml
+<dependency>
+	<groupId>io.dubbo.springboot</groupId>
+	<artifactId>spring-boot-starter-dubbo</artifactId>
+	<version>1.0.0</version>
+</dependency>
+```
+
+```application.properties
+spring.dubbo.application.name=provider
+spring.dubbo.registry.address=zookeeper://192.168.1.72:2181
+spring.dubbo.protocol.name=dubbo
+spring.dubbo.protocol.port=20880
+
+## ZK cluster ##
+spring.dubbo.registry.address=zookeeper://192.168.80.4:2181?backup=192.168.80.3:2181,192.168.80.5:2181
+```
+
+```src/main/resources/dubbo-provider.xml
+<dubbo:service interface="com.newcare.service.IBizService" ref="bizService"/>
+<dubbo:reference interface="com.newcare.auth.service.IAuthService" id="authService" retries="0" check="false" timeout="5000"></dubbo:reference>
+```
+
+```Java
+@ImportResource("classpath:dubbo-provider.xml")
+public class BizMain
+// ...
+```
+
+```Java
+public abstract class AbstractBizService implements IBizService {
+	
+	@Autowired
+	protected IAuthService authService;
+	
+	// ...
+```
+
+4. Thread Pool Exhausted
+
+默认值是200, 在服务层的application.properties修改:
+
+----------------------------------------------
+spring.dubbo.protocol.threads=300
+----------------------------------------------
+
+加大此参数不一定能起到预期的效果, 重要的还是应用代码的优化, 比如数据库访问、业务逻辑等.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

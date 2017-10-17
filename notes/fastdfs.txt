@@ -1,0 +1,194 @@
+########################################################
+!!!!!!!!important!!!!!!!!
+
+service iptables stop
+########################################################
+
+1. libevent
+
+libevent 必须安装在/usr目录下面，检查：
+
+rpm -qa | grep libevent						# libevent-1.4.13-4.el6.x86_64
+rpm -ql libevent-1.4.13-4.el6.x86_64
+
+https://github.com/downloads/libevent/libevent/libevent-2.0.19-stable.tar.gz
+tar zxvf libevent-2.0.19-stable.tar.gz
+./configure --prefix=/usr
+make clean
+make 
+make install
+
+2. FastDFS
+
+https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/fastdfs/FastDFS_v4.06.tar.gz
+
+./make.sh
+./make.sh install
+
+配置Tracker
+
+base_path=/home/devuser/fastdfs  
+http.server_port=9000 
+reserved_storage_space = 10%
+port=22122
+
+启动Tracker
+
+fdfs_trackerd /etc/fdfs/tracker.conf
+
+Error: fdfs_trackerd: error while loading shared libraries: libevent-2.0.so.5
+Fix: 
+
+ln -s /usr/lib/libevent-2.0.so.5 /usr/lib64/libevent-2.0.so.5
+
+Log: 
+
+/home/devuser/fastdfs/logs/storaged.log
+/home/devuser/fastdfs/logs/trackerd.log
+
+
+配置Storage
+
+base_path=/home/devuser/fastdfs
+store_path0=/home/devuser/fastdfs
+tracker_server=192.168.1.250:22122
+
+启动Storage
+
+fdfs_storaged /etc/fdfs/storage.conf
+
+Data Path: /home/devuser/fastdfs/data
+
+配置Service
+
+cd /root/FastDFS/init.d
+
+cp * /etc/init.d/
+
+chkconfig --add fdfs_trackerd
+chkconfig --add fdfs_storaged
+
+service fdfs_storaged start | stop | status
+
+集群配置
+
+分别在节点上安装FDFS，修改/etc/fdfs/storage.conf
+######################################################
+tracker_server=192.168.1.251:22122
+tracker_server=192.168.1.250:22122
+######################################################
+
+任意节点运行以下命令查看集群状态：
+
+fdfs_monitor /etc/fdfs/storage.conf
+
+
+### Spring Boot Integration
+
+```application.properties
+fdfs.connectTimeout = 5
+fdfs.networkTimeout = 30
+fdfs.charset = ISO8859-1
+fdfs.trackerServers = 192.168.1.250:22122,192.168.1.251:22122
+```
+
+```pom.xml
+<dependency>
+	<groupId>org.csource</groupId>
+	<artifactId>fastdfs-client-java</artifactId>
+	<version>1.25</version>
+</dependency>
+```
+
+https://github.com/happyfish100/fastdfs-client-java
+
+```Java
+@SpringBootApplication
+@ComponentScan(value = {
+		"com.newcare.*.service.impl",
+})
+public class ProxyMain {
+```
+
+3. Nginx
+
+fdfs nginx mod:
+https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/fastdfs/fastdfs-nginx-module_v1.15.tar.gz
+
+nginx:
+http://nginx.org/download/nginx-1.10.3.tar.gz
+
+yum install pcre-devel
+./configure --prefix=/usr/local/nginx --add-module=/root/fdfs/fastdfs-nginx-module/src/
+
+/etc/init.d/nginx
+https://www.nginx.com/resources/wiki/start/topics/examples/redhatnginxinit/
+
+chkconfig --add nginx 
+chkconfig --level 2345 nginx on
+
+service nginx start
+
+Error: 
+load conf file "/etc/fdfs/mod_fastdfs.conf" fail
+
+mod_fastdfs.conf
+------------------------------------------------------------------
+cp /root/fdfs/fastdfs-nginx-module/src/mod_fastdfs.conf /etc/fdfs/
+
+tracker_server=192.168.1.251:22122
+storage_server_port=23000
+group_name=group1
+url_have_group_name = true
+store_path0=/opt/fastdfs
+------------------------------------------------------------------
+
+ln -s /opt/fastdfs/data/ /opt/fastdfs/data/M00
+
+nginx.conf
+------------------------------------------------------------------
+location /group1/M00 {
+	ngx_fastdfs_module;
+}
+------------------------------------------------------------------
+
+http://192.168.1.251/group1/M00/00/00/wKgB-1mOyQeAK8BIAABq0Ptnc845216555
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

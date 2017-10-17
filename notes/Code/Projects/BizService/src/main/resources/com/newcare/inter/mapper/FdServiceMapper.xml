@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+						"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.newcare.inter.mapper.FdServiceMapper">
+
+	<resultMap id="fdServiceMap"  type="com.newcare.inter.pojo.FdService">
+		<result column="service_id" property="id"></result>
+	  	<result column="service_code" property="code"></result>
+	  	<result column="service_name" property="name"></result>
+	  	<result column="service_status" property="status"></result>
+	  	<result column="service_order" property="order"></result>
+	  	<result column="create_date" property="createDate"></result>
+	</resultMap>
+	
+	<select id="selectAllActiveService" resultMap="fdServiceMap">
+		SELECT service_id, service_code, service_name, service_status, service_order, create_date 
+		  FROM inter_fd_services;
+		 WHERE service_status = 1
+		 ORDER BY service_order ASC
+	</select>
+
+
+</mapper>   

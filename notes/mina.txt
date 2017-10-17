@@ -1,0 +1,75 @@
+1. Sample tutorial
+
+https://mina.apache.org/mina-project/userguide/ch2-basics/sample-tcp-server.html
+
+2. Dependencies 
+
+```xml
+<dependencies>
+	<dependency>
+		<groupId>org.apache.mina</groupId>
+		<artifactId>mina-core</artifactId>
+		<version>2.0.7</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.7.24</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>1.7.24</version>
+	</dependency>
+</dependencies>
+```
+
+3. Events
+
+class IMServerHandler extends IoHandlerAdapter
+
+sessionCreated
+sessionOpened
+sessionClosed
+messageReceived
+messageSent
+exceptionCaught
+
+4. WriteFuture
+
+Listen for completion
+
+WriteFuture future = session.write(obj);
+future.addListener(new IoFutureListener() {
+	void operationComplete(WriteFuture future) {
+		// ...
+	}
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

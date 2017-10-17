@@ -1,0 +1,101 @@
+Master-Slave
+--------------------------------------
+
+Config
+
+--------------------------
+slaveof 192.168.1.251 6390	
+slave-serve-stale-data yes	
+slave-read-only yes
+
+repl-diskless-sync no
+repl-backlog-size 1mb
+--------------------------
+
+Commands 
+--------------------------
+INFO
+	- Check replication info at Replication section.
+	
+Example:
+	----------------------------------------------------------------
+	# Replication
+	role:master
+	connected_slaves:2
+	slave0:ip=192.168.1.251,port=6391,state=online,offset=3417,lag=1
+	slave1:ip=192.168.1.250,port=6392,state=online,offset=3417,lag=0
+	----------------------------------------------------------------
+--------------------------
+
+--------------------------------------
+
+Sentinel
+----------------------------------------------------------------------------
+
+Config
+
+----------------------------
+bind 192.168.1.251
+port 26379
+protected-mode no
+
+sentinel monitor authmaster 192.168.1.251 6390 2
+sentinel down-after-milliseconds authmaster 30000
+sentinel failover-timeout authmaster 180000
+sentinel parallel-syncs authmaster 1
+----------------------------
+
+Run
+----------------------------
+nohup redis-sentinel /etc/redis/sentinel1.conf  > /var/log/sentinel1.log 2>&1 &
+nohup redis-sentinel /etc/redis/sentinel2.conf  > /var/log/sentinel2.log 2>&1 &
+nohup redis-sentinel /etc/redis/sentinel3.conf  > /var/log/sentinel3.log 2>&1 &
+----------------------------
+
+Failover Log
+--------------------------------------------------------
+20496:X 27 Apr 11:41:26.657 # +config-update-from sentinel ecf05a4f466a5fcc4260dbd25906b408daf3c1ac 127.0.0.1 26380 @ authmaster 192.168.1.251 6390
+20496:X 27 Apr 11:41:26.657 # +switch-master authmaster 192.168.1.251 6390 192.168.1.251 6391
+
+--------------------------------------------------------
+
+Spring Data Redis
+
+--------------------------------------------------------
+spring.redis.host=192.168.1.251
+spring.redis.port=6390
+
+spring.redis.sentinel.master=authmaster
+spring.redis.sentinel.nodes=192.168.1.251:26379,192.168.1.250:26379,192.168.1.250:26380
+--------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
