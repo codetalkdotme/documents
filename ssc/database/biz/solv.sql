@@ -1,10 +1,12 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/9/26 20:20:01                           */
+/* Created on:     2017/10/18 20:10:33                          */
 /*==============================================================*/
 
 
 drop table if exists sv_comments;
+
+drop table if exists sv_quest_tags;
 
 drop table if exists sv_questions;
 
@@ -39,6 +41,20 @@ alter table sv_comments comment '问题评论, 答案评论, 评论的评论 不
 - 评论1 - 评论2 -';
 
 /*==============================================================*/
+/* Table: sv_quest_tags                                         */
+/*==============================================================*/
+create table sv_quest_tags
+(
+   quest_tag_id         bigint not null auto_increment,
+   quest_id             bigint not null,
+   tag_id               int not null,
+   create_date          timestamp not null default CURRENT_TIMESTAMP,
+   primary key (quest_tag_id)
+);
+
+alter table sv_quest_tags comment '问题标签';
+
+/*==============================================================*/
 /* Table: sv_questions                                          */
 /*==============================================================*/
 create table sv_questions
@@ -53,7 +69,6 @@ create table sv_questions
             2 - 已发布
             3 - 冻结 (不允许回复)
             4 - 已解决',
-   quest_tags           varchar(1000) not null comment '问题标签列表，json数组格式',
    notify_users         varchar(1000) not null comment '提醒的用户列表（冗余）, 示例: ["xx1", "xx2"], [] .
             
             此字段为异步填充,  如果为null则相应的消息未处理',
@@ -85,7 +100,7 @@ create table sv_replies
    reply_accepted       int not null default 0 comment '回答是否被接受, 一个问题只有一个被接受回复
             0 未接受
             1 接受',
-   accept_date          timestamp null comment '接受答复时间',
+   accept_date          timestamp comment '接受答复时间',
    comment_thread       varchar(100) not null comment '评论thread, 使用UUID',
    notify_users         varchar(1000) comment '提醒的用户列表（冗余）, 示例: ["xx1", "xx2"], [] .
             
