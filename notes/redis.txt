@@ -17,6 +17,11 @@ cd redis-3.2.8
 make
 sudo make install
 
+Error: jemalloc/jemalloc.h: No such file or directory
+---------------------------------
+Fix:
+make MALLOC=libc
+---------------------------------
 
 sudo mkdir /etc/redis
 sudo mkdir /var/redis

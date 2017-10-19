@@ -1,0 +1,33 @@
+1. headless模式
+
+VBoxManage startvm MyVM --type headless
+
+2. 主机键(Host Key)
+
+管理 -> 全局设定 -> 热键 -> 虚拟电脑 -> 主机组合键
+
+3. NAT方式访问guest
+
+Fix 1: 配置端口转发
+Host IP/Port: 127.0.0.1/2222
+Guest IP/Port: 10.0.2.15/22
+
+Fix 2: 添加Host Only网卡
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
