@@ -1,0 +1,69 @@
+wget https://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm
+rpm -Uvh erlang-solutions-1.0-1.noarch.rpm
+
+socat depend
+----------------------------------------
+wget --no-cache http://www.convirture.com/repos/definitions/rhel/6.x/convirt.repo -O /etc/yum.repos.d/convirt.repo
+
+yum install socat
+
+
+
+yum install erlang
+
+----------------------------------------
+
+http://erlang.org/download/otp_src_19.3.tar.gz
+
+tar zxvf 
+
+./configure
+make && make install
+
+erl
+------
+Erlang/OTP 19 [erts-8.3] [source] [64-bit] [smp:2:2]
+
+rpm -ivh --nodeps rabbitmq-server-3.6.10-1.el6.noarch.rpm
+
+/usr/sbin/rabbitmq-server 
+----------------------------------------
+=ERROR REPORT==== 1-Jul-2017::13:16:24 ===
+beam/beam_load.c(1287): Error loading module mnesia:
+  mandatory chunk of type 'Atom' not found
+
+----------------------------------------
+erl command not found
+
+ln -s /usr/local/bin/erl /usr/bin/erl
+
+----------------------------------------
+Loading of /usr/local/lib/erlang/lib/mnesia-4.15/ebin/mnesia.beam failed: badfile
+
+Final Note
+--------------------------------------------------------------------------------
+https://www.rabbitmq.com/releases/erlang/
+
+rpm -ivh erlang-19.0-1.el6.x86_64.rpm
+
+wget --no-cache http://www.convirture.com/repos/definitions/rhel/6.x/convirt.repo -O /etc/yum.repos.d/convirt.repo
+
+yum install socat
+
+rpm -ivh rabbitmq-server-3.6.10-1.el6.noarch.rpm
+
+service rabbitmq-server start
+
+
+
+
+
+
+
+
+
+
+
+
+
+

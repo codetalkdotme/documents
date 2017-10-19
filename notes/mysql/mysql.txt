@@ -31,7 +31,7 @@ A temporary password is generated for root@localhost: BszQMud_571D
 SET PASSWORD FOR 'root'@'localhost' = PASSWORD('Xgb870924');
 
 5.7.6 and later:
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'New#caresz1';
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'SSc$1q2w3';
 
 
 uninstall plugin validate_password;
