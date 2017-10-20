@@ -100,20 +100,6 @@ rabbitmqctl list_permissions -p ssc
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 Admin
 
 ----------------------------------------

@@ -50,6 +50,7 @@ wget --no-cache http://www.convirture.com/repos/definitions/rhel/6.x/convirt.rep
 
 yum install socat
 
+wget https://www.rabbitmq.com/releases/rabbitmq-server/v3.6.10/rabbitmq-server-3.6.10-1.el6.noarch.rpm
 rpm -ivh rabbitmq-server-3.6.10-1.el6.noarch.rpm
 
 service rabbitmq-server start
