@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/10/18 20:10:33                          */
+/* Created on:     2017/10/21 20:00:42                          */
 /*==============================================================*/
 
 
@@ -11,6 +11,8 @@ drop table if exists sv_quest_tags;
 drop table if exists sv_questions;
 
 drop table if exists sv_replies;
+
+drop table if exists sv_reply_votes;
 
 /*==============================================================*/
 /* Table: sv_comments                                           */
@@ -95,8 +97,6 @@ create table sv_replies
    user_id              int not null,
    reply_content        longtext comment '我也有同样问题, +1 / 初始值1',
    reply_seq            int comment '回复的序号',
-   reply_ups            int not null default 0,
-   reply_downs          int not null default 0,
    reply_accepted       int not null default 0 comment '回答是否被接受, 一个问题只有一个被接受回复
             0 未接受
             1 接受',
@@ -113,4 +113,21 @@ create table sv_replies
 );
 
 alter table sv_replies comment '问题答复表';
+
+/*==============================================================*/
+/* Table: sv_reply_votes                                        */
+/*==============================================================*/
+create table sv_reply_votes
+(
+   vote_id              bigint not null auto_increment,
+   user_id              int not null comment '用户id',
+   reply_id             bigint not null comment '答复id',
+   vote_up              int not null comment '0 否 1 是',
+   vote_down            int not null comment '0 否 1 是',
+   delete_mark          int not null default 0 comment '是否已取消 0 否 1 是',
+   create_date          timestamp not null default CURRENT_TIMESTAMP,
+   primary key (vote_id)
+);
+
+alter table sv_reply_votes comment '答复vote';
 
