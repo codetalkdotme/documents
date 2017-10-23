@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/10/16 17:45:53                          */
+/* Created on:     2017/10/23 20:04:21                          */
 /*==============================================================*/
 
 
@@ -9,6 +9,8 @@ drop table if exists fnd_config;
 drop table if exists fnd_group_tags;
 
 drop table if exists fnd_lookups;
+
+drop table if exists fnd_notice;
 
 drop table if exists fnd_position_tag_group;
 
@@ -72,6 +74,44 @@ create table fnd_lookups
 );
 
 alter table fnd_lookups comment 'lookup';
+
+/*==============================================================*/
+/* Table: fnd_notice                                            */
+/*==============================================================*/
+create table fnd_notice
+(
+   notice_id            bigint not null auto_increment,
+   user_id              bigint not null comment '消息接收者用户ID',
+   notice_type          int not null comment '通知子类型:
+            专干消息
+            1：预约挂号，2：咨询，3：预约免疫，4：家庭医生签约申请，5：预约体检，6：入户随访居民回复，7：活动邀请居民回复，8：建档提醒，11：其他
+            
+            居民消息
+            1：预约免疫，2：预约体检，3：入户提醒，11：其他',
+   notice_subtype       int comment '通知子类型, 可选',
+   from_user_id         bigint comment '消息发起者, 比如预约挂号发起人用户ID',
+   notice_content       varchar(300) not null,
+   notice_dtl_content   varchar(500),
+   is_app               int not null comment '0 否 1 是',
+   app_status           int not null default 1 comment 'APP通知状态
+            
+            1 未读
+            2 已读',
+   is_push              int not null comment '0 否 1 是',
+   push_status          int not null default 1 comment '通知状态
+            
+            1 未推送
+            2 已推送',
+   attr1                varchar(200),
+   attr2                varchar(200),
+   attr3                varchar(200),
+   attr4                varchar(200),
+   attr5                varchar(200),
+   create_date          timestamp not null default CURRENT_TIMESTAMP,
+   primary key (notice_id)
+);
+
+alter table fnd_notice comment '通知基础表';
 
 /*==============================================================*/
 /* Table: fnd_position_tag_group                                */
