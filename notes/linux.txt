@@ -39,6 +39,10 @@ passwd appdev
 
 编辑/etc/sudoers, 注释#%wheel ...
 
+- Add use to group
+
+usermod -a -G wheel devuser
+
 
 
 

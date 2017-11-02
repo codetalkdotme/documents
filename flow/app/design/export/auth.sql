@@ -1,14 +1,33 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/7/5 14:04:51                            */
+/* Created on:     2017/10/31 13:43:00                          */
 /*==============================================================*/
 
+
+drop table if exists auth_configs;
 
 drop table if exists auth_logins;
 
 drop table if exists auth_tickets;
 
+drop index uidx_user_login on auth_users;
+
 drop table if exists auth_users;
+
+/*==============================================================*/
+/* Table: auth_configs                                          */
+/*==============================================================*/
+create table auth_configs
+(
+   config_id            int not null auto_increment,
+   config_code          varchar(100) not null,
+   config_value         varchar(100) not null,
+   config_desc          varchar(300) default '0' comment '删除标记 0 未删除 1 已删除',
+   create_date          timestamp not null default CURRENT_TIMESTAMP,
+   primary key (config_id)
+);
+
+alter table auth_configs comment '认证配置表';
 
 /*==============================================================*/
 /* Table: auth_logins                                           */
@@ -47,24 +66,32 @@ create table auth_users
 (
    user_id              int not null auto_increment,
    user_login           varchar(200) not null comment '用户登录名, 由英文字母 和 下划线组成',
-   user_name            varchar(200) not null comment '用户名称, 允许中文 / 空格等',
-   user_profile         varchar(200) not null comment '用户头像URL, 存放fdfs路径, 示例: "group1/M00/00/03/wKhQA1lbBFaALuwvAAChr-JPsVI9607165"',
-   profile_status       tinyint not null comment '头像状态
-            1. 待审核
-            2. 审核通过
-            3. 拒绝',
-   user_mail            varchar(50) not null comment '文件类型',
-   mail_verified        TINYINT not null comment '是否验证email
+   user_login_lower     varchar(200) not null comment 'login不区分大小写',
+   user_mobile          varchar(30),
+   mobile_verified      int comment '是否验证mobile
             0 未验证
             1 已验证',
-   user_status          tinyint not null comment '账户状态
+   user_mail            varchar(50) comment '文件类型',
+   user_mail_lower      varchar(50) comment 'mail不区分大小写',
+   mail_verified        int default 0 comment '是否验证email
+            0 未验证
+            1 已验证',
+   user_status          int not null default 1 comment '账户状态
             1. active 
             2. suspend 停用状态',
-   user_passwd          varchar(50) not null comment '用户密码, 存放变换后的密码: HEX(MD5("8!9HA3D6GB2A4mb2+实际输入的密码+9Cx8BB@A41B59658"))
+   user_passwd          varchar(200) not null comment '用户密码, 存放变换后的密码: HEX(MD5("8!9HA3D6GB2A4mb2+实际输入的密码+9Cx8BB@A41B59658"))
             ',
    create_date          timestamp not null default CURRENT_TIMESTAMP,
    primary key (user_id)
 );
 
 alter table auth_users comment '用户表';
+
+/*==============================================================*/
+/* Index: uidx_user_login                                       */
+/*==============================================================*/
+create unique index uidx_user_login on auth_users
+(
+   user_login
+);
 
