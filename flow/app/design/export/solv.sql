@@ -1,14 +1,16 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/10/31 13:44:11                          */
+/* Created on:     2017/11/3 12:17:57                           */
 /*==============================================================*/
 
 
 drop table if exists sv_comments;
 
+drop table if exists sv_ext_quests;
+
 drop table if exists sv_quest_tags;
 
-drop table if exists sv_questions;
+drop table if exists sv_quests;
 
 drop table if exists sv_replies;
 
@@ -43,6 +45,27 @@ alter table sv_comments comment '问题评论, 答案评论, 评论的评论 不
 - 评论1 - 评论2 -';
 
 /*==============================================================*/
+/* Table: sv_ext_quests                                         */
+/*==============================================================*/
+create table sv_ext_quests
+(
+   ext_quest_id         varchar(100) not null,
+   quest_site           varchar(100) not null comment '站点',
+   quest_url            varchar(300) not null,
+   quest_title          varchar(500) not null comment '标题',
+   quest_content        longtext,
+   quest_answer         longtext not null,
+   quest_tags           varchar(200) default '0' comment '问题标签',
+   quest_votes          int not null,
+   answer_accepted      int not null comment '是否被接受 0 否 1 是',
+   quest_indexed        int not null default 0 comment '是否索引 0 否 1 是',
+   create_date          timestamp not null default CURRENT_TIMESTAMP,
+   primary key (ext_quest_id)
+);
+
+alter table sv_ext_quests comment '问题表(ext 外部)';
+
+/*==============================================================*/
 /* Table: sv_quest_tags                                         */
 /*==============================================================*/
 create table sv_quest_tags
@@ -57,9 +80,9 @@ create table sv_quest_tags
 alter table sv_quest_tags comment '问题标签';
 
 /*==============================================================*/
-/* Table: sv_questions                                          */
+/* Table: sv_quests                                             */
 /*==============================================================*/
-create table sv_questions
+create table sv_quests
 (
    quest_id             bigint not null auto_increment,
    user_id              int not null,
@@ -79,13 +102,14 @@ create table sv_questions
             1 重复 ',
    dup_qid              bigint comment '重复问题ID, 允许NULL',
    spam_mark            int not null default 0 comment '是否垃圾问题 0 否 1 是',
+   quest_indexed        int not null comment '是否索引 0 否 1 是',
    update_date          timestamp not null default CURRENT_TIMESTAMP,
    update_by            int not null,
    create_date          timestamp not null default CURRENT_TIMESTAMP,
    primary key (quest_id)
 );
 
-alter table sv_questions comment '问题表';
+alter table sv_quests comment '问题表';
 
 /*==============================================================*/
 /* Table: sv_replies                                            */
