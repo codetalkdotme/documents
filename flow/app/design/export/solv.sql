@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/11/3 12:17:57                           */
+/* Created on:     2017/11/4 19:13:37                           */
 /*==============================================================*/
 
 
@@ -85,6 +85,7 @@ alter table sv_quest_tags comment '问题标签';
 create table sv_quests
 (
    quest_id             bigint not null auto_increment,
+   quest_uuid           varchar(100) not null comment 'UUID',
    user_id              int not null,
    quest_title          varchar(200) not null,
    quest_content        longtext,
@@ -102,7 +103,7 @@ create table sv_quests
             1 重复 ',
    dup_qid              bigint comment '重复问题ID, 允许NULL',
    spam_mark            int not null default 0 comment '是否垃圾问题 0 否 1 是',
-   quest_indexed        int not null comment '是否索引 0 否 1 是',
+   quest_indexed        int not null default 0 comment '是否索引 0 否 1 是',
    update_date          timestamp not null default CURRENT_TIMESTAMP,
    update_by            int not null,
    create_date          timestamp not null default CURRENT_TIMESTAMP,
