@@ -19,8 +19,8 @@ insert fnd_lookups (lookup_category, lookup_code, lookup_value, lookup_order) va
 
 -- tags
 insert into fnd_tags (tag_id, tag_text) values (101, 'J2SE');
-insert into fnd_tags (tag_id, tag_text) values (102, 'Spring MVC');
-insert into fnd_tags (tag_id, tag_text) values (103, 'Spring Boot');
+insert into fnd_tags (tag_id, tag_text) values (102, 'Spring-MVC');
+insert into fnd_tags (tag_id, tag_text) values (103, 'Spring-Boot');
 insert into fnd_tags (tag_id, tag_text) values (104, 'MyBatis');
 
 insert into fnd_tags (tag_id, tag_text) values (201, 'Bash');
@@ -29,7 +29,7 @@ insert into fnd_tags (tag_id, tag_text) values (203, 'Awk');
 
 insert into fnd_tags (tag_id, tag_text) values (301, 'Oracle');
 insert into fnd_tags (tag_id, tag_text) values (302, 'MySQL');
-insert into fnd_tags (tag_id, tag_text) values (303, 'Perf Tuning');
+insert into fnd_tags (tag_id, tag_text) values (303, 'Perf-Tuning');
 
 insert into fnd_tags (tag_id, tag_text) values (401, 'Redis');
 insert into fnd_tags (tag_id, tag_text) values (402, 'Memcache');
@@ -40,7 +40,7 @@ insert into fnd_tags (tag_id, tag_text) values (503, 'Gatling');
 
 insert into fnd_tags (tag_id, tag_text) values (601, 'AxureRP');
 insert into fnd_tags (tag_id, tag_text) values (602, 'Mockplus');
-insert into fnd_tags (tag_id, tag_text) values (603, 'Balsamiq Mockups');
+insert into fnd_tags (tag_id, tag_text) values (603, 'Balsamiq-Mockups');
 insert into fnd_tags (tag_id, tag_text) values (604, 'Photoshop');
 insert into fnd_tags (tag_id, tag_text) values (605, 'Illustrator');
 insert into fnd_tags (tag_id, tag_text) values (606, 'Sketch');

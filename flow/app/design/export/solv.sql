@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/11/4 19:13:37                           */
+/* Created on:     2017/11/7 9:42:11                            */
 /*==============================================================*/
 
 
@@ -49,7 +49,8 @@ alter table sv_comments comment '问题评论, 答案评论, 评论的评论 不
 /*==============================================================*/
 create table sv_ext_quests
 (
-   ext_quest_id         varchar(100) not null,
+   ext_quest_id         bigint not null auto_increment,
+   quest_uuid           varchar(100) not null,
    quest_site           varchar(100) not null comment '站点',
    quest_url            varchar(300) not null,
    quest_title          varchar(500) not null comment '标题',
@@ -103,7 +104,9 @@ create table sv_quests
             1 重复 ',
    dup_qid              bigint comment '重复问题ID, 允许NULL',
    spam_mark            int not null default 0 comment '是否垃圾问题 0 否 1 是',
-   quest_indexed        int not null default 0 comment '是否索引 0 否 1 是',
+   spam_mark_by         int,
+   spam_mark_reason     varchar(200),
+   quest_indexed        int not null comment '是否索引 0 否 1 是',
    update_date          timestamp not null default CURRENT_TIMESTAMP,
    update_by            int not null,
    create_date          timestamp not null default CURRENT_TIMESTAMP,

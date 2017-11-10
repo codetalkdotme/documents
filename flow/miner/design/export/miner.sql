@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/10/31 22:20:52                          */
+/* Created on:     2017/11/8 11:22:10                           */
 /*==============================================================*/
 
 
@@ -57,10 +57,11 @@ create table site_lists
    site_id              int not null comment '站点名称',
    entity_type_id       int not null,
    list_url             varchar(500) not null comment '列表页面URL, 包含page参数, 从1开始递增',
-   list_type            int not null comment 'list类型 1 html 2 json',
+   list_type            int not null comment 'list类型 1 html 2 json 3 html - httpclient',
    list_pages_el        varchar(300) not null comment '子页面el, 支持page参数替换',
    list_pages_attr      varchar(100) comment '子页面属性',
    last_page            int not null comment '最后完成页 ',
+   max_page             int not null comment '最大页码',
    page_param           varchar(100) comment '页面参数名称',
    list_enabled         int not null default 1 comment '是否启用 1 启用 0 不启用',
    error_msg            varchar(1000),
@@ -78,6 +79,8 @@ create table site_pages
    page_id              varchar(100) not null,
    page_url             varchar(500) not null comment '站点名称',
    page_status          int not null default 1 comment '状态 1 未抓取 2 成功抓取 3 抓取出错',
+   site_id              int not null,
+   entity_type_id       int not null,
    error_msg            varchar(1000) comment '错误消息, 异常堆栈',
    last_update          timestamp not null default CURRENT_TIMESTAMP,
    create_date          timestamp not null default CURRENT_TIMESTAMP,
@@ -126,7 +129,7 @@ create table web_entity_attrs
    entity_attr_id       bigint not null auto_increment,
    entity_id            bigint not null,
    attr_key             varchar(100) not null comment '页面站点',
-   attr_val             text comment '页面资源路径',
+   attr_val             mediumtext comment '页面资源路径',
    create_date          timestamp not null default CURRENT_TIMESTAMP,
    primary key (entity_attr_id)
 );

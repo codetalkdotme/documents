@@ -1,0 +1,17 @@
+Example: reindex articles of dzone(2) and javacodegeeks(3)
+
+1. exhaust kafka topics
+2. recreate ES index
+2. delete articles
+
+delete from prs_articles
+
+3. delete miner data 
+
+delete from site_pages where site_id in (2, 3)
+delete from web_entity_attrs where entity_id in ( select entity_id from web_entities where site_id in (2, 3) )
+delete from web_entities where site_id in (2, 3)
+
+4. reset sitelist config
+
+
