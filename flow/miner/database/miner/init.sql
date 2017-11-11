@@ -117,6 +117,13 @@ values (3, 301, 'https://www.javacodegeeks.com/2017/04/elasticsearch-tutorial-ja
 		3, 6, 'article#the-post div.entry h3 a', 'href', 0, null, 1);		
 
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/search?tab=relevance&q=java%20concurrency&page={page}', 1, 'div.search-results div.question-summary div.result-link a', 'href', 0, 'page', 1000);
+
+
+
+
+
 
 
 
