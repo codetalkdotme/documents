@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/11/8 11:22:10                           */
+/* Created on:     2017/11/11 11:45:10                          */
 /*==============================================================*/
 
 
@@ -58,6 +58,7 @@ create table site_lists
    entity_type_id       int not null,
    list_url             varchar(500) not null comment '列表页面URL, 包含page参数, 从1开始递增',
    list_type            int not null comment 'list类型 1 html 2 json 3 html - httpclient',
+   list_priority        int not null default 1 comment '优先级 - 站点范围内, 越小优先级越高',
    list_pages_el        varchar(300) not null comment '子页面el, 支持page参数替换',
    list_pages_attr      varchar(100) comment '子页面属性',
    last_page            int not null comment '最后完成页 ',

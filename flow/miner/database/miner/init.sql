@@ -92,7 +92,29 @@ insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages
 values (4, 401, 'http://www.baeldung.com/java-tutorial', 
 		3, 'section.post_content h4 a', 'href', 0, null, 1);
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_priority, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (3, 301, 'https://www.javacodegeeks.com/2015/09/advanced-java.html', 
+		3, 1, 'article#the-post div.entry h3 a', 'href', 0, null, 1);
+		
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_priority, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (3, 301, 'https://www.javacodegeeks.com/2015/09/apache-lucene-fundamentals.html', 
+		3, 2, 'article#the-post div.entry h3 a', 'href', 0, null, 1);
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_priority, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (3, 301, 'https://www.javacodegeeks.com/2015/09/mongodb-a-scalable-nosql-db.html', 
+		3, 3, 'article#the-post div.entry h3 a', 'href', 0, null, 1);						
+			
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_priority, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (3, 301, 'https://www.javacodegeeks.com/2015/09/java-concurrency-essentials.html', 
+		3, 4, 'article#the-post div.entry h3 a', 'href', 0, null, 1);	
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_priority, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (3, 301, 'https://www.javacodegeeks.com/2015/09/java-design-patterns.html', 
+		3, 5, 'article#the-post div.entry h3 a', 'href', 0, null, 1);	
+		
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_priority, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (3, 301, 'https://www.javacodegeeks.com/2017/04/elasticsearch-tutorial-java-developers.html', 
+		3, 6, 'article#the-post div.entry h3 a', 'href', 0, null, 1);		
 
 
 
