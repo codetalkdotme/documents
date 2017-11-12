@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/11/11 11:45:10                          */
+/* Created on:     2017/11/12 15:55:02                          */
 /*==============================================================*/
 
 
@@ -79,6 +79,7 @@ create table site_pages
 (
    page_id              varchar(100) not null,
    page_url             varchar(500) not null comment '站点名称',
+   page_type            int not null comment 'page类型 1 html 2 html - httpclient',
    page_status          int not null default 1 comment '状态 1 未抓取 2 成功抓取 3 抓取出错',
    site_id              int not null,
    entity_type_id       int not null,
@@ -117,7 +118,7 @@ create table web_entities
    entity_indexed       int not null default 0 comment '页面是否被索引 0 否 1 是',
    create_date          timestamp not null default CURRENT_TIMESTAMP,
    primary key (entity_id),
-   unique key AK_uidx_page_url (page_url)
+   key AK_uidx_page_url (page_url)
 );
 
 alter table web_entities comment 'entity表';
