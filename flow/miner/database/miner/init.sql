@@ -121,7 +121,8 @@ insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages
 values (1, 101, 'https://stackoverflow.com/search?tab=relevance&q=java%20concurrency&page={page}', 1, 'div.search-results div.question-summary div.result-link a', 'href', 0, 'page', 1000);
 
 
-
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/questions/tagged/oracle?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 1000);
 
 
 
