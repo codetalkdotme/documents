@@ -5,6 +5,8 @@ insert into sites (site_id, site_name, site_home, site_logo) values (1, 'stackov
 insert into sites (site_id, site_name, site_home, site_logo) values (2, 'dzone', 'https://dzone.com', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (3, 'javacodegeeks', 'https://www.javacodegeeks.com', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (4, 'baeldung', 'http://www.baeldung.com', null);
+insert into sites (site_id, site_name, site_home, site_logo) values (5, 'mkyong', 'http://www.mkyong.com', null);
+
 
 -- site entities
 delete from site_entity_types;
@@ -13,6 +15,7 @@ insert into site_entity_types(entity_type_id, site_id, entity_type) values (101,
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (201, 2, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (301, 3, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (401, 4, 'article');
+insert into site_entity_types(entity_type_id, site_id, entity_type) values (501, 5, 'article');
 
 -- entity attrs 
 delete from site_entity_attrs;
@@ -43,6 +46,11 @@ insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, att
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (401, "article_content", 1, "article.post section.post_content", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (401, "article_tags", 1, "article.post div.page-header ul.categories li", null);
 
+-- mkyong
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_title", 4, "div#post-container article h1", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_summary", 3, "div#post-container article div.post-content > p", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_content", 1, "div#post-container article div.post-content", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_tags", 1, "div#post-container article span.post-tag", null);
 
 -- site lists
 delete from site_lists;
@@ -123,6 +131,56 @@ values (1, 101, 'https://stackoverflow.com/search?tab=relevance&q=java%20concurr
 
 insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
 values (1, 101, 'https://stackoverflow.com/questions/tagged/oracle?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 1000);
+
+-- mkyong
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-8-tutorials/', 3, 'article div.post-content div.tut-content ol li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/spring-boot-tutorials/', 3, 'article div.post-content div.tut-content ol li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/spring-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/spring-mvc-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/spring-security-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/spring-batch-tutorial/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

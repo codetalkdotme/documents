@@ -107,6 +107,15 @@ accept_date          timestamp null comment '接受答复时间'
 ----------------------------------------------------------------
 
 
+7. SQL hint
+
+select /******/ from a FORCE INDEX(IDEX_T_C_1), b where /******/
+
+
+8. 读写分离
+
+* mycat
+* oneproxy 		web页面查看主从数据库使用状况
 
 
 
