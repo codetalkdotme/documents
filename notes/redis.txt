@@ -319,6 +319,53 @@ appendonly yes
 * 拷贝appendonly.aof到参数dir指定的目录
 * 启动redis
 
+6. Pub & Sub
+
+-- Pub 
+redis-cli -p 9001
+127.0.0.1:9001> PUBLISH foo hello
+(integer) 1
+127.0.0.1:9001> PUBLISH foo 'good work'
+(integer) 1
+
+-- Sub
+redis-cli -p 9001
+127.0.0.1:9001> SUBSCRIBE foo
+Reading messages... (press Ctrl-C to quit)
+1) "subscribe"
+2) "foo"
+3) (integer) 1
+1) "message"
+2) "foo"
+3) "hello"
+
+Features:
+------------------------------------------------------------------
+* 单个channel可以有多个subscriber, 每次往channel发送消息时, 每个subscriber都会收到消息
+* 
+------------------------------------------------------------------
+
+
+====== Spring Integration
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

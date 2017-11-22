@@ -6,6 +6,7 @@ insert into sites (site_id, site_name, site_home, site_logo) values (2, 'dzone',
 insert into sites (site_id, site_name, site_home, site_logo) values (3, 'javacodegeeks', 'https://www.javacodegeeks.com', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (4, 'baeldung', 'http://www.baeldung.com', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (5, 'mkyong', 'http://www.mkyong.com', null);
+insert into sites (site_id, site_name, site_home, site_logo) values (6, 'infoq', 'https://www.infoq.com', null);
 
 
 -- site entities
@@ -16,6 +17,7 @@ insert into site_entity_types(entity_type_id, site_id, entity_type) values (201,
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (301, 3, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (401, 4, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (501, 5, 'article');
+insert into site_entity_types(entity_type_id, site_id, entity_type) values (601, 6, 'article');
 
 -- entity attrs 
 delete from site_entity_attrs;
@@ -51,6 +53,13 @@ insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, att
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_summary", 3, "div#post-container article div.post-content > p", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_content", 1, "div#post-container article div.post-content", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (501, "article_tags", 1, "div#post-container article span.post-tag", null);
+
+-- infoq
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (601, "article_title", 3, "div#site div#content h1.general", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (601, "article_summary", 3, "div#site div#content div.text_info > p", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (601, "article_content", 1, "div#site div#content div.text_info", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (601, "article_tags", 1, "div#site div#content div.text_info div.related ul li a.followable", null);
+
 
 -- site lists
 delete from site_lists;
@@ -130,7 +139,7 @@ values (1, 101, 'https://stackoverflow.com/search?tab=relevance&q=java%20concurr
 
 
 insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
-values (1, 101, 'https://stackoverflow.com/questions/tagged/oracle?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 1000);
+values (1, 101, 'https://stackoverflow.com/questions/tagged/oracle?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 400);
 
 -- mkyong
 insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
@@ -151,18 +160,61 @@ values (5, 501, 'http://www.mkyong.com/tutorials/spring-security-tutorials/', 3,
 insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
 values (5, 501, 'http://www.mkyong.com/tutorials/spring-batch-tutorial/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-xml-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-json-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-date-time-tutorials/', 3, 'article div.post-content > ol li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-regular-expression-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-io-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/jdbc-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/hibernate-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/java-mongodb-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/maven-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/log4j-tutorial/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (5, 501, 'http://www.mkyong.com/tutorials/junit-tutorials/', 3, 'article div.post-content > ul li a', 'href', 0, null, 1);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=mysql&totalItems=0&currentPage={currentPage}', 
+		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 100);
+		
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=spring%20cloud&totalItems=0&currentPage={currentPage}', 
+		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 20);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=redis&totalItems=0&currentPage={currentPage}', 
+		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 20);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=scala&totalItems=0&currentPage={currentPage}', 
+		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 20);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/questions/tagged/redis?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 400);
 
 
-
-
-
-
-
-
-
-
-
-
+-- infoq
+insert into site_pages values ('5a2e7e32-1b74-4e9d-96dc-ea9c9d6ea302', 'https://www.infoq.com/news/2012/12/netflix-hystrix-fault-tolerance', 2, 3, 6, 601, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 
 
