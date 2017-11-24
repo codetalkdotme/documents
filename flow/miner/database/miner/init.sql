@@ -8,6 +8,7 @@ insert into sites (site_id, site_name, site_home, site_logo) values (4, 'baeldun
 insert into sites (site_id, site_name, site_home, site_logo) values (5, 'mkyong', 'http://www.mkyong.com', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (6, 'infoq', 'https://www.infoq.com', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (7, 'thenewstack', 'https://thenewstack.io/', null);
+insert into sites (site_id, site_name, site_home, site_logo) values (8, 'jvns', 'https://jvns.ca/', null);
 
 -- site entities
 delete from site_entity_types;
@@ -19,6 +20,7 @@ insert into site_entity_types(entity_type_id, site_id, entity_type) values (401,
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (501, 5, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (601, 6, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (701, 7, 'article');
+insert into site_entity_types(entity_type_id, site_id, entity_type) values (801, 8, 'article');
 
 -- entity attrs 
 delete from site_entity_attrs;
@@ -66,6 +68,13 @@ insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, att
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (701, "article_summary", 3, "#main article div.entry-content div.post-content > p", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (701, "article_content", 1, "#main article div.entry-content div.post-content", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (701, "article_tags", 1, "#main article footer.entry-footer div.newtags", null);
+
+-- jvns
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (801, "article_title", 3, "#main article header h1.entry-title", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (801, "article_summary", 3, "#main article div.entry-content > p", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (801, "article_content", 1, "#main article div.entry-content", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (801, "article_tags", 1, "#main article header div.post-tags", null);
+
 
 -- site lists
 delete from site_lists;
@@ -224,19 +233,14 @@ values (1, 101, 'https://stackoverflow.com/questions/tagged/apache-kafka?sort=vo
 insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
 values (1, 101, 'https://stackoverflow.com/questions/tagged/rabbitmq?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 100);
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/questions/tagged/bash?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 360);
 
--- infoq
-insert into site_pages values ('5a2e7e32-1b74-4e9d-96dc-ea9c9d6ea302', 'https://www.infoq.com/news/2012/12/netflix-hystrix-fault-tolerance', 2, 3, 6, 601, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/questions/tagged/sed?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 200);
 
-
-
--- thenewstack
-insert into site_pages values ('8ca5750d-01c2-4420-a36d-62d99a2cab9d', 'https://thenewstack.io/grpc-lean-mean-communication-protocol-microservices/', 2, 3, 7, 701, null, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-
-
-
-
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/questions/tagged/awk?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page', 250);
 
 
 
