@@ -254,11 +254,32 @@ values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxS
 		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 50);
 
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=kafka&totalItems=0&currentPage={currentPage}', 
+		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 20);
+
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=rabbitmq&totalItems=0&currentPage={currentPage}', 
+		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 20);
 
 
 
-
-
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 
 
 
