@@ -19,12 +19,25 @@ ${HOME}/.m2/settings.xml
 	</mirror>
 </mirrors>
 
-2. 
+2. 安装第三方JAR包到本地仓库
 
 
+示例: alipay-sdk-java20171027120314.jar
 
+* 将alipay-sdk-java20171027120314.jar 拷贝到 C:\Users\Administrator\Desktop
+* 运行命令
 
+mvn install:install-file -DgroupId=com.alipay -DartifactId=sdk-Java -Dversion=20171027120314 -Dpackaging=jar -Dfile=alipay-sdk-java20171027120314.jar
 
+* 配置maven依赖
+
+<dependency>
+	<groupId>com.alipay</groupId>
+	<artifactId>sdk-Java</artifactId>
+	<version>20171027120314</version>
+</dependency>
+
+3. 
 
 
 

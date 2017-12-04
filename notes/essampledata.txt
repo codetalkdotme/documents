@@ -1,0 +1,197 @@
+## Query
+
+curl 'http://192.168.1.250:9200/flow-post/post/_search' -d '
+{
+  "query" : {
+    "bool" : {
+      "should" : {
+        "terms" : {
+          "create_by" : ["109", "1203"]
+        }
+      },
+      "should" : {
+        "terms" : {
+          "post_tags" : ["nosql", "spring-cloud", "项目管理"]
+        }
+      }
+    }
+  }
+}'
+
+curl 'http://192.168.1.250:9200/flow-post/post/_search' -d '
+{
+  "query" : {
+    "bool" : {
+      "should" : {
+        "terms" : {
+          "post_tags" : ["窘境"]
+        }
+      }
+    }
+  }
+}'
+
+
+
+## Sample Data
+
+{
+    "post_id": 2,
+    "post_type": 1,
+    "post_content": "hello post 2 #java #concurrency",
+    "post_tags": ["java", "concurrency"],
+    "create_by": "1103",
+    "create_date": 1512131183000
+}
+
+{
+    "post_id": 3,
+    "post_type": 1,
+    "post_content": "post about redis & java #java #redis",
+    "post_tags": ["java", "redis"],
+    "create_by": "1109",
+    "create_date": 1512121183000
+}
+
+{
+    "post_id": 4,
+    "post_type": 1,
+    "post_content": "java连接mysql数据库, 使用jdbc #jdbc #java #mysql",
+    "post_tags": ["java", "jdbc", "mysql", "数据库"],
+    "create_by": "2001",
+    "create_date": 1512131193000
+}
+
+{
+    "post_id": 5,
+    "post_type": 1,
+    "post_content": "#RabbitMQ 比 #redis 好用吗? 我觉得不是的! ",
+    "post_tags": ["rabbitmq", "redis"],
+    "create_by": "1109",
+    "create_date": 1512121283000
+}
+
+{
+    "post_id": 6,
+    "post_type": 1,
+    "post_content": "#Spring-Data 挺不错, 可以连接关系型数据库, 也可以连接 #nosql, 使用的模式都差不错! 赞!",
+    "post_tags": ["spring-data", "nosql", "database", "java"],
+    "create_by": "21190",
+    "create_date": 1512111283000
+}
+
+
+{
+    "post_id": 7,
+    "post_type": 1,
+    "post_content": "项目管理之窘境. 管好一个项目好难, 时间进度需要把控, 质量需要时刻看着. 项目管理是个大难题. #项目管理 #软件",
+    "post_tags": ["项目管理", "软件", "窘境"],
+    "create_by": "1203",
+    "create_date": 1512131293000
+}
+
+
+{
+    "post_id": 8,
+    "post_type": 1,
+    "post_content": "今天周末加班, 抽空去了趟香港, 中午12点出发, 下午3点回到深圳, 速度还是挺快的! #香港三小时游 #加班",
+    "post_tags": ["香港三小时游", "加班"],
+    "create_by": "1109",
+    "create_date": 1512131193000
+}
+
+{
+    "post_id": 9,
+    "post_type": 1,
+    "post_content": "Java 8新特性. #try-resource / #lambda / #streams / #CompletableFuture , 都肥肠不错.",
+    "post_tags": ["java8", "lambda", "streams", "completablefuture"],
+    "create_by": "2001",
+    "create_date": 1512131223000
+}
+
+
+{
+    "post_id": 10,
+    "post_type": 1,
+    "post_content": "#TiDB 头两天听人提起, 看起来很不错. 会取代 #NOSQL 和 #关系数据库 吗?",
+    "post_tags": ["tidb", "nosql", "database"],
+    "create_by": "109",
+    "create_date": 1512131223000
+}
+
+{
+    "post_id": 11,
+    "post_type": 1,
+    "post_content": "Spring Cloud一定比阿里的服务治理框架dubbo好吗? 经过性能测试, 明显后者更胜一筹. #dubbo #spring-cloud",
+    "post_tags": ["spring-cloud", "dubbo", "java"],
+    "create_by": "1203",
+    "create_date": 1512131423000
+}
+
+{
+    "post_id": 12,
+    "post_type": 1,
+    "post_content": "Java的未来, 会往函数式编程的方向靠拢吗? 也许有可能. #java #函数式编程",
+    "post_tags": ["函数式编程", "java"],
+    "create_by": "12032",
+    "create_date": 1512131623000
+}
+
+{
+    "post_id": 13,
+    "post_type": 1,
+    "post_content": "Java自从第一个版本发布以来, 已经形成了一个巨大的生态, 包括分布式 / DB / 前端 etc. #分布式 #前端",
+    "post_tags": ["分布式", "前端", "数据库"],
+    "create_by": "109",
+    "create_date": 1512138193000
+}
+
+## Index
+
+PUT http://192.168.1.250:9200/flow-post/
+{
+    "mappings": {
+        "post": {
+            "properties" : {
+                  "post_id" : { "type" : "long", "index": "no" },
+                  "post_type" : { "type" : "integer", "index": "no" },
+                  "post_content" : { "type" : "string" },
+                  "post_tags" : { // 数组
+                      "type" : "string",
+                      "index" : "not_analyzed",
+                      "analyzer": "ik_smart",
+                      "search_analyzer": "ik_smart"
+                  },
+                  "create_by" : { 
+                      "type" : "string", 
+                      "index" : "not_analyzed"
+                  },
+                  "create_date" : { "type" : "long", "index": "no" }
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

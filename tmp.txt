@@ -1,8 +1,0 @@
-EurekaClientConfigBean
-
-EurekaServerConfigBean
-
-
-
-
-
