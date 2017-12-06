@@ -38,17 +38,18 @@ sudo mkdir /var/redis/6379
 
 sudo vim /etc/redis/6379.conf
 ------------------------------------------
+bind 192.168.1.251 127.0.0.1
+protected-mode no
+port
 daemonize yes
 pidfile
-port
-loglevel
 logfile   /var/log/redis_6379.log
+loglevel
 dir /var/redis/6379 #!important
 
 appendonly yes # 启用AOF持久化（对于认证服务器）
 
-protected-mode no
-bind 192.168.1.251 127.0.0.1
+
 ------------------------------------------
 
 
