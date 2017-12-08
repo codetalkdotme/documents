@@ -1,10 +1,34 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/12/6 17:04:08                           */
+/* Created on:     2017/12/8 14:08:38                           */
 /*==============================================================*/
 
 
+drop table if exists auth_sessions;
+
 drop table if exists auth_users;
+
+/*==============================================================*/
+/* Table: auth_sessions                                         */
+/*==============================================================*/
+create table auth_sessions
+(
+   session_id           bigint not null auto_increment,
+   user_id              bigint not null,
+   user_login           varchar(30) not null,
+   access_token         varchar(50) not null comment 'token',
+   transport_key        varchar(50) not null comment '传输密钥',
+   pf_type              int not null comment '平台类型 1 Web 2 Android 3 iOS',
+   attr1                varchar(300),
+   attr2                varchar(300),
+   attr3                varchar(300),
+   last_update          bigint not null comment '最后更新时间',
+   create_date          bigint not null,
+   end_date             bigint comment '会话结束时间',
+   primary key (session_id)
+);
+
+alter table auth_sessions comment '用户会话表';
 
 /*==============================================================*/
 /* Table: auth_users                                            */
