@@ -1,6 +1,6 @@
 /*==============================================================*/
 /* DBMS name:      MySQL 5.0                                    */
-/* Created on:     2017/12/5 20:51:52                           */
+/* Created on:     2017/12/9 18:48:51                           */
 /*==============================================================*/
 
 
@@ -22,7 +22,8 @@ create table d_stat_post
    stat_date            varchar(20) not null comment '日期yyyymmdd格式',
    num_post             int not null,
    num_comment          int not null,
-   num_like             int not null,
+   num_post_like        int not null,
+   num_cmnt_like        int not null comment '帖子/评论点赞',
    num_vote             int not null,
    create_date          bigint not null
 );
@@ -63,7 +64,8 @@ create table d_stat_user_post
    user_id              bigint not null comment '帖子创建人',
    num_post             int not null,
    num_comment          int not null,
-   num_like             int not null,
+   num_post_like        int not null,
+   num_cmnt_like        int not null,
    num_vote             int not null,
    create_date          bigint not null
 );
