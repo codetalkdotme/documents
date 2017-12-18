@@ -10,6 +10,8 @@ insert into sites (site_id, site_name, site_home, site_logo) values (6, 'infoq',
 insert into sites (site_id, site_name, site_home, site_logo) values (7, 'thenewstack', 'https://thenewstack.io/', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (8, 'jvns', 'https://jvns.ca/', null);
 insert into sites (site_id, site_name, site_home, site_logo) values (9, 'martinfowler', 'https://martinfowler.com/', null);
+insert into sites (site_id, site_name, site_home, site_logo) values (10, 'tutsplus', 'https://code.tutsplus.com/', null);
+
 
 -- site entities
 delete from site_entity_types;
@@ -23,6 +25,8 @@ insert into site_entity_types(entity_type_id, site_id, entity_type) values (601,
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (701, 7, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (801, 8, 'article');
 insert into site_entity_types(entity_type_id, site_id, entity_type) values (901, 9, 'article');
+
+insert into site_entity_types(entity_type_id, site_id, entity_type) values (1001, 10, 'article');
 
 -- entity attrs 
 delete from site_entity_attrs;
@@ -81,6 +85,12 @@ insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, att
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (901, "article_title", 3, "div#content div.pattern h1", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (901, "article_summary", 1, "div#content div.pattern p.intent", null);
 insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (901, "article_content", 1, "div#content div.pattern", null);
+
+-- tutsplus
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (1001, "article_title", 1, "main.content div.content-banner h1.content-banner__title", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (1001, "article_summary", 3, "main.content div.post-body__content p", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (1001, "article_content", 1, "main.content div.post-body__content", null);
+insert into site_entity_attrs (entity_type_id, attr_key, attr_type, attr_el, attr_name) values (1001, "article_tags", 1, "main.content div.content-heading__secondary-categories", null);
 
 -- site lists
 delete from site_lists;
@@ -279,11 +289,18 @@ insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages
 values (2, 201, 'https://dzone.com/services/widget/header-headerV2/nextPage?maxSize=10&numPages=1&pageSize=50&term=spring%20mvc&totalItems=0&currentPage={currentPage}', 
 		2, 'result data pages newest {currentPage}', 'url', 0, 'currentPage', 100);
 
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (1, 101, 'https://stackoverflow.com/questions/tagged/android?sort=votes&page={page}', 1, 'div#questions div.summary h3 a', 'href', 0, 'page',4700);
 
+-- tutsplus / Android
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (10, 1001, 'https://code.tutsplus.com/categories/android-sdk?page={page}', 
+		3, 'main.content section.layout__content-with-sidebar li.posts__post article a.posts__post-title', 'href', 0, 'page',40);
 
-
-
-
+-- tutsplus / iOS
+insert into site_lists (site_id, entity_type_id, list_url, list_type, list_pages_el, list_pages_attr, last_page, page_param, max_page) 
+values (10, 1001, 'https://code.tutsplus.com/categories/ios-sdk?page={page}', 
+		3, 'main.content section.layout__content-with-sidebar li.posts__post article a.posts__post-title', 'href', 0, 'page',40);
 
 
 
